@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controle de Produção</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="title-container">
+        <h1>PROCESSO ATUAL POR PEDIDOS</h1>
+        <div>
+            <button class="add-button" onclick="openAddPedidoModal()">Adicionar Pedido</button>
+            <button class="add-button" onclick="openItensModal()">Gerenciar Itens</button>
+        </div>
+    </div>
+
+    <table class="tablePedidos" id="tablePedidos">
+        <thead>
+            <tr>
+                <th>DATA ENTRADA</th>
+                <th>DATA ENTREGA</th>
+                <th>PEDIDO</th>
+                <th>CLIENTE</th>
+                <th>PROCESSO</th>
+                <th>ITENS</th>
+                <th>AÇÕES</th>
+            </tr>
+        </thead>
+        <tbody id="pedidosTableBody">
+            <!-- Dados serão carregados via JavaScript -->
+        </tbody>
+    </table>
+
+    <!-- Modal Adicionar Pedido -->
+    <div id="addPedidoModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Adicionar Novo Pedido</h2>
+                <span class="close" onclick="closeAddPedidoModal()">&times;</span>
+            </div>
+            
+            <form id="addPedidoForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="dataEntrada">Data de Entrada:</label>
+                        <input type="date" id="dataEntrada" name="dataEntrada" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="dataEntrega">Data de Entrega:</label>
+                        <input type="date" id="dataEntrega" name="dataEntrega" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="codigoPedido">Código do Pedido:</label>
+                        <input type="text" id="codigoPedido" name="codigoPedido" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="cliente">Cliente:</label>
+                        <input type="text" id="cliente" name="cliente" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="processoAtual">Processo Atual:</label>
+                    <select id="processoAtual" name="processoAtual" required>
+                        <option value="">Selecione o processo</option>
+                        <option value="corte">Corte</option>
+                        <option value="personalização">Personalização</option>
+                        <option value="produção">Produção</option>
+                        <option value="expedição">Expedição</option>
+                    </select>
+                </div>
+
+                <div class="itens-section">
+                    <div class="section-header">
+                        <h3>Itens do Pedido</h3>
+                        <button type="button" class="add-button small" onclick="openSelectItemModal()">Adicionar Item</button>
+                    </div>
+                    
+                    <table class="table-itens" id="pedidoItensTable">
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th>Quantidade</th>
+                                <th>Observações</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pedidoItensBody">
+                            <!-- Itens serão adicionados aqui -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" onclick="closeAddPedidoModal()">Cancelar</button>
+                    <button type="submit" class="btn-save">Salvar Pedido</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Selecionar Item -->
+    <div id="selectItemModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Selecionar Item</h2>
+                <span class="close" onclick="closeSelectItemModal()">&times;</span>
+            </div>
+            
+            <table class="tablePedidos" id="selectItemTable">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Descrição</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="selectItemBody">
+                    <!-- Itens serão carregados aqui -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal Adicionar Item ao Pedido -->
+    <div id="addItemToPedidoModal" class="modal">
+        <div class="modal-content small">
+            <div class="modal-header">
+                <h2>Adicionar Item ao Pedido</h2>
+                <span class="close" onclick="closeAddItemToPedidoModal()">&times;</span>
+            </div>
+            
+            <form id="addItemToPedidoForm">
+                <input type="hidden" id="selectedItemId">
+                <div class="form-group">
+                    <label id="selectedItemName"></label>
+                </div>
+                <div class="form-group">
+                    <label for="itemQuantidade">Quantidade:</label>
+                    <input type="number" id="itemQuantidade" name="quantidade" min="1" value="1" required>
+                </div>
+                <div class="form-group">
+                    <label for="itemObservacoes">Observações:</label>
+                    <textarea id="itemObservacoes" name="observacoes" rows="3"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" onclick="closeAddItemToPedidoModal()">Cancelar</button>
+                    <button type="submit" class="btn-save">Adicionar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Gerenciar Itens -->
+    <div id="itensModal" class="modal">
+        <div class="modal-content large">
+            <div class="modal-header">
+                <h2>Gerenciar Itens</h2>
+                <span class="close" onclick="closeItensModal()">&times;</span>
+            </div>
+            
+            <div class="tabs">
+                <button class="tab-button active" onclick="showTab('listar-itens')">Listar Itens</button>
+                <button class="tab-button" onclick="showTab('adicionar-item')">Adicionar Item</button>
+            </div>
+
+            <div id="listar-itens" class="tab-content active">
+                <table class="tablePedidos" id="itensTable">
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Descrição</th>
+                            <th>Processos</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="itensTableBody">
+                        <!-- Itens serão carregados aqui -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="adicionar-item" class="tab-content">
+                <form id="addItemForm">
+                    <div class="form-group">
+                        <label for="itemNome">Nome do Item:</label>
+                        <input type="text" id="itemNome" name="nome" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="itemDescricao">Descrição:</label>
+                        <textarea id="itemDescricao" name="descricao" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn-save">Adicionar Item</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Gerenciar Processos do Item -->
+    <div id="itemProcessosModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="itemProcessosTitle">Processos do Item</h2>
+                <span class="close" onclick="closeItemProcessosModal()">&times;</span>
+            </div>
+            
+            <div class="section-header">
+                <h3>Adicionar Processo</h3>
+            </div>
+            
+            <form id="addItemProcessoForm">
+                <input type="hidden" id="currentItemId">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="processoSelect">Processo:</label>
+                        <select id="processoSelect" name="processo_id" required>
+                            <option value="">Selecione o processo</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="processoOrdem">Ordem:</label>
+                        <input type="number" id="processoOrdem" name="ordem" min="1" value="1" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="processoObservacoes">Observações:</label>
+                    <textarea id="processoObservacoes" name="observacoes" rows="2"></textarea>
+                </div>
+                <button type="submit" class="btn-save">Adicionar Processo</button>
+            </form>
+
+            <div class="section-header">
+                <h3>Processos Configurados</h3>
+            </div>
+            
+            <table class="tablePedidos" id="itemProcessosTable">
+                <thead>
+                    <tr>
+                        <th>Ordem</th>
+                        <th>Processo</th>
+                        <th>Observações</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="itemProcessosBody">
+                    <!-- Processos serão carregados aqui -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
