@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Controle de Produção</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏭</text></svg>">
 </head>
 <body>
     <div class="title-container">
@@ -12,6 +14,7 @@
         <div>
             <button class="add-button" onclick="openAddPedidoModal()">Adicionar Pedido</button>
             <button class="add-button" onclick="openItensModal()">Gerenciar Itens</button>
+            <button class="add-button" onclick="openProcessosModal()">Gerenciar Processos</button>
         </div>
     </div>
 
@@ -252,6 +255,93 @@
                     <!-- Processos serão carregados aqui -->
                 </tbody>
             </table>
+        </div>
+    </div>
+
+    <!-- Modal Gerenciar Processos -->
+    <div id="processosModal" class="modal">
+        <div class="modal-content large">
+            <div class="modal-header">
+                <h2>Gerenciar Processos</h2>
+                <span class="close" onclick="closeProcessosModal()">&times;</span>
+            </div>
+            
+            <div class="tabs">
+                <button class="tab-button active" onclick="showTab('listar-processos')">Listar Processos</button>
+                <button class="tab-button" onclick="showTab('adicionar-processo')">Adicionar Processo</button>
+            </div>
+
+            <div id="listar-processos" class="tab-content active">
+                <table class="tablePedidos" id="processosTable">
+                    <thead>
+                        <tr>
+                            <th>Ordem</th>
+                            <th>Nome</th>
+                            <th>Descrição</th>
+                            <th>Uso</th>
+                            <th>Tipo</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="processosTableBody">
+                        <!-- Processos serão carregados aqui -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="adicionar-processo" class="tab-content">
+                <form id="addProcessoForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="processoNome">Nome do Processo:</label>
+                            <input type="text" id="processoNome" name="nome" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="processoOrdem">Ordem:</label>
+                            <input type="number" id="processoOrdem" name="ordem" min="1" placeholder="Automático se vazio">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="processoDescricao">Descrição:</label>
+                        <textarea id="processoDescricao" name="descricao" rows="3" placeholder="Descrição opcional do processo"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn-save">Adicionar Processo</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Editar Processo -->
+    <div id="editProcessoModal" class="modal">
+        <div class="modal-content small">
+            <div class="modal-header">
+                <h2>Editar Processo</h2>
+                <span class="close" onclick="closeEditProcessoModal()">&times;</span>
+            </div>
+            
+            <form id="editProcessoForm">
+                <input type="hidden" id="editProcessoId">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editProcessoNome">Nome do Processo:</label>
+                        <input type="text" id="editProcessoNome" name="nome" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editProcessoOrdem">Ordem:</label>
+                        <input type="number" id="editProcessoOrdem" name="ordem" min="1" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="editProcessoDescricao">Descrição:</label>
+                    <textarea id="editProcessoDescricao" name="descricao" rows="3"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" onclick="closeEditProcessoModal()">Cancelar</button>
+                    <button type="submit" class="btn-save">Salvar Alterações</button>
+                </div>
+            </form>
         </div>
     </div>
 

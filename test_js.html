@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste JavaScript</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .test-button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .test-button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Teste de JavaScript - Sistema de Controle</h1>
+    
+    <div id="resultados">
+        <div class="status" id="loading">⏳ Carregando testes...</div>
+    </div>
+    
+    <div id="botoes" style="display: none;">
+        <h3>Testes Manuais:</h3>
+        <button class="test-button" onclick="testarAPI()">Testar API</button>
+        <button class="test-button" onclick="testarFuncoes()">Testar Funções</button>
+        <button class="test-button" onclick="testarModais()">Testar Modais</button>
+        <button class="test-button" onclick="limparResultados()">Limpar</button>
+    </div>
+
+    <script>
+        // Teste básico de carregamento
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('✅ DOM carregado');
+            testarSintaxe();
+        });
+
+        function adicionarResultado(mensagem, tipo) {
+            const div = document.createElement('div');
+            div.className = `status ${tipo}`;
+            div.innerHTML = mensagem;
+            document.getElementById('resultados').appendChild(div);
+        }
+
+        function testarSintaxe() {
+            try {
+                // Tentar carregar e executar o script principal
+                const script = document.createElement('script');
+                script.onload = function() {
+                    adicionarResultado('✅ Script principal carregado sem erros de sintaxe', 'success');
+                    testarVariaveis();
+                };
+                script.onerror = function() {
+                    adicionarResultado('❌ Erro ao carregar script principal', 'error');
+                    document.getElementById('loading').style.display = 'none';
+                };
+                script.src = 'script.js';
+                document.head.appendChild(script);
+            } catch (error) {
+                adicionarResultado(`❌ Erro de sintaxe: ${error.message}`, 'error');
+                document.getElementById('loading').style.display = 'none';
+            }
+        }
+
+        function testarVariaveis() {
+            setTimeout(() => {
+                try {
+                    // Verificar se as variáveis globais existem
+                    if (typeof pedidoItens !== 'undefined') {
+                        adicionarResultado('✅ Variável pedidoItens definida', 'success');
+                    } else {
+                        adicionarResultado('⚠️ Variável pedidoItens não encontrada', 'error');
+                    }
+
+                    if (typeof API_BASE_URL !== 'undefined') {
+                        adicionarResultado('✅ Variável API_BASE_URL definida', 'success');
+                    } else {
+                        adicionarResultado('⚠️ Variável API_BASE_URL não encontrada', 'error');
+                    }
+
+                    // Verificar se as principais funções existem
+                    const funcoes = [
+                        'apiRequest',
+                        'carregarPedidos', 
+                        'salvarPedido',
+                        'openAddPedidoModal',
+                        'carregarItens',
+                        'carregarProcessos'
+                    ];
+
+                    funcoes.forEach(funcao => {
+                        if (typeof window[funcao] === 'function') {
+                            adicionarResultado(`✅ Função ${funcao} disponível`, 'success');
+                        } else {
+                            adicionarResultado(`❌ Função ${funcao} não encontrada`, 'error');
+                        }
+                    });
+
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('botoes').style.display = 'block';
+
+                } catch (error) {
+                    adicionarResultado(`❌ Erro ao verificar variáveis: ${error.message}`, 'error');
+                    document.getElementById('loading').style.display = 'none';
+                }
+            }, 1000);
+        }
+
+        async function testarAPI() {
+            try {
+                adicionarResultado('🔄 Testando conexão com API...', 'success');
+                
+                const response = await fetch('api.php?action=test');
+                const data = await response.json();
+                
+                if (data && data.status) {
+                    adicionarResultado(`✅ API respondeu: ${data.status}`, 'success');
+                } else {
+                    adicionarResultado('⚠️ API respondeu mas sem status esperado', 'error');
+                }
+                
+            } catch (error) {
+                adicionarResultado(`❌ Erro na API: ${error.message}`, 'error');
+            }
+        }
+
+        function testarFuncoes() {
+            try {
+                // Testar algumas funções básicas
+                if (typeof mostrarMensagem === 'function') {
+                    mostrarMensagem('Teste de mensagem', 'success');
+                    adicionarResultado('✅ Função mostrarMensagem executada', 'success');
+                }
+
+                if (typeof formatarData === 'function') {
+                    const dataFormatada = formatarData('2025-01-15');
+                    adicionarResultado(`✅ Função formatarData: ${dataFormatada}`, 'success');
+                }
+
+                if (typeof capitalizeFirst === 'function') {
+                    const texto = capitalizeFirst('teste');
+                    adicionarResultado(`✅ Função capitalizeFirst: ${texto}`, 'success');
+                }
+
+            } catch (error) {
+                adicionarResultado(`❌ Erro ao testar funções: ${error.message}`, 'error');
+            }
+        }
+
+        function testarModais() {
+            try {
+                // Verificar se os elementos dos modais existem
+                const modais = [
+                    'addPedidoModal',
+                    'itensModal', 
+                    'processosModal',
+                    'selectItemModal'
+                ];
+
+                modais.forEach(modalId => {
+                    const modal = document.getElementById(modalId);
+                    if (modal) {
+                        adicionarResultado(`✅ Modal ${modalId} encontrado`, 'success');
+                    } else {
+                        adicionarResultado(`⚠️ Modal ${modalId} não encontrado (normal se não estiver na página adm.html)`, 'error');
+                    }
+                });
+
+            } catch (error) {
+                adicionarResultado(`❌ Erro ao testar modais: ${error.message}`, 'error');
+            }
+        }
+
+        function limparResultados() {
+            document.getElementById('resultados').innerHTML = '';
+        }
+
+        // Capturar erros globais
+        window.addEventListener('error', function(event) {
+            console.error('Erro capturado:', event.error);
+            adicionarResultado(`❌ Erro JavaScript: ${event.error?.message || 'Erro desconhecido'}`, 'error');
+        });
+
+        // Testar console
+        console.log('🧪 Arquivo de teste carregado');
+    </script>
+</body>
+</html>

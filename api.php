@@ -90,6 +90,18 @@ try {
             getProcessos($pdo);
             break;
             
+        case 'add_processo':
+            addProcesso($pdo);
+            break;
+            
+        case 'update_processo':
+            updateProcesso($pdo);
+            break;
+            
+        case 'delete_processo':
+            deleteProcesso($pdo);
+            break;
+            
         case 'get_item_processos':
             getItemProcessos($pdo);
             break;
@@ -309,32 +321,55 @@ function deleteItem($pdo) {
             jsonResponse(['error' => 'ID do item é obrigatório'], 400);
         }
         
-        // Verificar se está em uso
-        $stmt = $pdo->prepare("SELECT COUNT(*) as total FROM pedido_itens WHERE item_id = ?");
+        $pdo->beginTransaction();
+        
+        // Verificar se está sendo usado em pedidos
+        $stmt = $pdo->prepare("
+            SELECT COUNT(*) as total, 
+                   GROUP_CONCAT(DISTINCT p.codigo_pedido SEPARATOR ', ') as pedidos_afetados
+            FROM pedido_itens pi
+            JOIN pedidos p ON pi.pedido_id = p.id
+            WHERE pi.item_id = ?
+        ");
         $stmt->execute([$item_id]);
         $result = $stmt->fetch();
         
         if ($result['total'] > 0) {
-            jsonResponse(['error' => 'Item está sendo usado em pedidos'], 400);
+            $pdo->rollBack();
+            jsonResponse([
+                'error' => 'Item está sendo usado em pedidos',
+                'details' => "Pedidos afetados: {$result['pedidos_afetados']}",
+                'count' => $result['total']
+            ], 400);
         }
         
-        $pdo->beginTransaction();
+        // Buscar nome do item para log
+        $stmt = $pdo->prepare("SELECT nome FROM itens WHERE id = ?");
+        $stmt->execute([$item_id]);
+        $item = $stmt->fetch();
         
-        // Remover processos do item
+        if (!$item) {
+            $pdo->rollBack();
+            jsonResponse(['error' => 'Item não encontrado'], 404);
+        }
+        
+        // Remover processos do item (receitas)
         $stmt = $pdo->prepare("DELETE FROM item_processos WHERE item_id = ?");
         $stmt->execute([$item_id]);
+        $processosRemovidos = $stmt->rowCount();
         
         // Remover item
         $stmt = $pdo->prepare("DELETE FROM itens WHERE id = ?");
         $stmt->execute([$item_id]);
         
-        if ($stmt->rowCount() === 0) {
-            $pdo->rollBack();
-            jsonResponse(['error' => 'Item não encontrado'], 404);
-        }
-        
         $pdo->commit();
-        jsonResponse(['success' => true]);
+        
+        logError("Item excluído: {$item['nome']} (ID: $item_id) - $processosRemovidos processos removidos");
+        jsonResponse([
+            'success' => true, 
+            'message' => "Item '{$item['nome']}' excluído com sucesso",
+            'processos_removidos' => $processosRemovidos
+        ]);
         
     } catch (Exception $e) {
         if ($pdo->inTransaction()) {
@@ -347,12 +382,180 @@ function deleteItem($pdo) {
 
 function getProcessos($pdo) {
     try {
-        $stmt = $pdo->query("SELECT * FROM processos ORDER BY ordem, nome");
+        $stmt = $pdo->query("
+            SELECT p.*, COUNT(ip.id) as total_usos
+            FROM processos p
+            LEFT JOIN item_processos ip ON p.id = ip.processo_id
+            GROUP BY p.id
+            ORDER BY p.ordem, p.nome
+        ");
         $processos = $stmt->fetchAll();
         jsonResponse($processos);
     } catch (Exception $e) {
         logError("getProcessos: " . $e->getMessage());
         jsonResponse(['error' => 'Erro ao buscar processos'], 500);
+    }
+}
+
+function addProcesso($pdo) {
+    try {
+        $input = file_get_contents('php://input');
+        $data = json_decode($input, true);
+        
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            jsonResponse(['error' => 'JSON inválido'], 400);
+        }
+        
+        if (empty($data['nome'])) {
+            jsonResponse(['error' => 'Nome do processo é obrigatório'], 400);
+        }
+        
+        // Verificar se já existe processo com mesmo nome
+        $stmt = $pdo->prepare("SELECT id FROM processos WHERE nome = ?");
+        $stmt->execute([$data['nome']]);
+        if ($stmt->fetch()) {
+            jsonResponse(['error' => 'Já existe um processo com este nome'], 400);
+        }
+        
+        // Se não informou ordem, pegar a próxima disponível
+        if (empty($data['ordem'])) {
+            $stmt = $pdo->query("SELECT COALESCE(MAX(ordem), 0) + 1 as proxima_ordem FROM processos");
+            $result = $stmt->fetch();
+            $data['ordem'] = $result['proxima_ordem'];
+        }
+        
+        $stmt = $pdo->prepare("INSERT INTO processos (nome, descricao, ordem) VALUES (?, ?, ?)");
+        $stmt->execute([
+            $data['nome'], 
+            $data['descricao'] ?? '', 
+            $data['ordem']
+        ]);
+        
+        $processo_id = $pdo->lastInsertId();
+        jsonResponse(['success' => true, 'processo_id' => $processo_id]);
+        
+    } catch (Exception $e) {
+        logError("addProcesso: " . $e->getMessage());
+        jsonResponse(['error' => 'Erro ao salvar processo'], 500);
+    }
+}
+
+function updateProcesso($pdo) {
+    try {
+        $processo_id = $_GET['id'] ?? 0;
+        $input = file_get_contents('php://input');
+        $data = json_decode($input, true);
+        
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            jsonResponse(['error' => 'JSON inválido'], 400);
+        }
+        
+        if (!$processo_id) {
+            jsonResponse(['error' => 'ID do processo é obrigatório'], 400);
+        }
+        
+        if (empty($data['nome'])) {
+            jsonResponse(['error' => 'Nome do processo é obrigatório'], 400);
+        }
+        
+        // Verificar se já existe outro processo com mesmo nome
+        $stmt = $pdo->prepare("SELECT id FROM processos WHERE nome = ? AND id != ?");
+        $stmt->execute([$data['nome'], $processo_id]);
+        if ($stmt->fetch()) {
+            jsonResponse(['error' => 'Já existe outro processo com este nome'], 400);
+        }
+        
+        $stmt = $pdo->prepare("
+            UPDATE processos 
+            SET nome = ?, descricao = ?, ordem = ? 
+            WHERE id = ?
+        ");
+        
+        $stmt->execute([
+            $data['nome'],
+            $data['descricao'] ?? '',
+            $data['ordem'],
+            $processo_id
+        ]);
+        
+        if ($stmt->rowCount() === 0) {
+            jsonResponse(['error' => 'Processo não encontrado'], 404);
+        }
+        
+        jsonResponse(['success' => true]);
+        
+    } catch (Exception $e) {
+        logError("updateProcesso: " . $e->getMessage());
+        jsonResponse(['error' => 'Erro ao atualizar processo'], 500);
+    }
+}
+
+function deleteProcesso($pdo) {
+    try {
+        $processo_id = $_GET['id'] ?? 0;
+        
+        if (!$processo_id) {
+            jsonResponse(['error' => 'ID do processo é obrigatório'], 400);
+        }
+        
+        // Verificar se está sendo usado em receitas de itens
+        $stmt = $pdo->prepare("
+            SELECT COUNT(*) as total, 
+                   GROUP_CONCAT(DISTINCT i.nome SEPARATOR ', ') as itens_afetados
+            FROM item_processos ip
+            JOIN itens i ON ip.item_id = i.id
+            WHERE ip.processo_id = ?
+        ");
+        $stmt->execute([$processo_id]);
+        $result = $stmt->fetch();
+        
+        if ($result['total'] > 0) {
+            jsonResponse([
+                'error' => 'Processo está sendo usado em receitas de itens',
+                'details' => "Itens afetados: {$result['itens_afetados']}",
+                'count' => $result['total']
+            ], 400);
+        }
+        
+        // Verificar se é um processo padrão do sistema
+        $stmt = $pdo->prepare("SELECT nome FROM processos WHERE id = ?");
+        $stmt->execute([$processo_id]);
+        $processo = $stmt->fetch();
+        
+        if (!$processo) {
+            jsonResponse(['error' => 'Processo não encontrado'], 404);
+        }
+        
+        $processosEssenciais = ['corte', 'personalização', 'produção', 'expedição'];
+        if (in_array(strtolower($processo['nome']), $processosEssenciais)) {
+            // Verificar se há pedidos usando este processo
+            $stmt = $pdo->prepare("
+                SELECT COUNT(*) as total,
+                       GROUP_CONCAT(DISTINCT codigo_pedido SEPARATOR ', ') as pedidos_afetados
+                FROM pedidos 
+                WHERE processo_atual = ?
+            ");
+            $stmt->execute([strtolower($processo['nome'])]);
+            $resultPedidos = $stmt->fetch();
+            
+            if ($resultPedidos['total'] > 0) {
+                jsonResponse([
+                    'error' => 'Processo essencial está sendo usado em pedidos ativos',
+                    'details' => "Pedidos afetados: {$resultPedidos['pedidos_afetados']}",
+                    'count' => $resultPedidos['total']
+                ], 400);
+            }
+        }
+        
+        // Se chegou até aqui, pode excluir
+        $stmt = $pdo->prepare("DELETE FROM processos WHERE id = ?");
+        $stmt->execute([$processo_id]);
+        
+        jsonResponse(['success' => true]);
+        
+    } catch (Exception $e) {
+        logError("deleteProcesso: " . $e->getMessage());
+        jsonResponse(['error' => 'Erro ao excluir processo'], 500);
     }
 }
 

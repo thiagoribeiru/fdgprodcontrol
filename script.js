@@ -1,102 +1,242 @@
-// script.js - Funcionalidades principais do sistema
+// script.js - Sistema de Controle de Produção - Versão Corrigida
 
 // Variáveis globais
 let pedidoItens = [];
 let itensDisponiveis = [];
 let processosDisponiveis = [];
 
+// Configuração da API
+const API_BASE_URL = 'api.php';
+
 // Inicialização da página
 document.addEventListener('DOMContentLoaded', function() {
-    carregarPedidos();
-    configurarEventos();
-    
-    // Definir data de hoje como padrão
-    const hoje = new Date().toISOString().split('T')[0];
-    document.getElementById('dataEntrada').value = hoje;
+    console.log('Sistema iniciado');
+    inicializarSistema();
 });
+
+async function inicializarSistema() {
+    try {
+        // Verificar se a API está funcionando
+        await testarAPI();
+        
+        // Carregar dados iniciais se estivermos na página de administração
+        if (document.getElementById('pedidosTableBody')) {
+            await carregarPedidos();
+        }
+        
+        // Configurar eventos
+        configurarEventos();
+        
+        // Definir data de hoje como padrão
+        const hoje = new Date().toISOString().split('T')[0];
+        const dataEntrada = document.getElementById('dataEntrada');
+        if (dataEntrada) {
+            dataEntrada.value = hoje;
+        }
+        
+        console.log('Sistema carregado com sucesso');
+        
+    } catch (error) {
+        console.error('Erro ao inicializar sistema:', error);
+        mostrarMensagem('Erro ao inicializar o sistema. Verifique a conexão.', 'error');
+    }
+}
+
+// Testar se a API está funcionando
+async function testarAPI() {
+    try {
+        const data = await apiRequest(`${API_BASE_URL}?action=test`);
+        if (!data || data.error) {
+            throw new Error('API não está respondendo');
+        }
+        console.log('API funcionando:', data);
+    } catch (error) {
+        console.error('Erro na API:', error);
+        // Não bloquear a inicialização se a API falhar
+    }
+}
 
 // Configurar eventos dos formulários
 function configurarEventos() {
     // Formulário de adicionar pedido
-    document.getElementById('addPedidoForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        salvarPedido();
-    });
+    const formPedido = document.getElementById('addPedidoForm');
+    if (formPedido) {
+        formPedido.addEventListener('submit', function(e) {
+            e.preventDefault();
+            salvarPedido();
+        });
+    }
     
     // Formulário de adicionar item
-    document.getElementById('addItemForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        salvarItem();
-    });
+    const formItem = document.getElementById('addItemForm');
+    if (formItem) {
+        formItem.addEventListener('submit', function(e) {
+            e.preventDefault();
+            salvarItem();
+        });
+    }
     
     // Formulário de adicionar item ao pedido
-    document.getElementById('addItemToPedidoForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        adicionarItemAoPedido();
-    });
+    const formItemPedido = document.getElementById('addItemToPedidoForm');
+    if (formItemPedido) {
+        formItemPedido.addEventListener('submit', function(e) {
+            e.preventDefault();
+            adicionarItemAoPedido();
+        });
+    }
     
     // Formulário de adicionar processo ao item
-    document.getElementById('addItemProcessoForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        adicionarProcessoAoItem();
-    });
+    const formItemProcesso = document.getElementById('addItemProcessoForm');
+    if (formItemProcesso) {
+        formItemProcesso.addEventListener('submit', function(e) {
+            e.preventDefault();
+            adicionarProcessoAoItem();
+        });
+    }
+    
+    // Formulário de adicionar processo
+    const formProcesso = document.getElementById('addProcessoForm');
+    if (formProcesso) {
+        formProcesso.addEventListener('submit', function(e) {
+            e.preventDefault();
+            salvarProcesso();
+        });
+    }
+    
+    // Formulário de editar processo
+    const formEditProcesso = document.getElementById('editProcessoForm');
+    if (formEditProcesso) {
+        formEditProcesso.addEventListener('submit', function(e) {
+            e.preventDefault();
+            atualizarProcesso();
+        });
+    }
 }
 
-// Funções de Modal
+// === FUNÇÕES DE MODAL ===
+
 function openAddPedidoModal() {
-    document.getElementById('addPedidoModal').style.display = 'block';
-    limparFormularioPedido();
+    const modal = document.getElementById('addPedidoModal');
+    if (modal) {
+        modal.style.display = 'block';
+        limparFormularioPedido();
+    }
 }
 
 function closeAddPedidoModal() {
-    document.getElementById('addPedidoModal').style.display = 'none';
-    pedidoItens = [];
-    atualizarTabelaItensPedido();
+    const modal = document.getElementById('addPedidoModal');
+    if (modal) {
+        modal.style.display = 'none';
+        pedidoItens = [];
+        atualizarTabelaItensPedido();
+    }
 }
 
 function openSelectItemModal() {
-    document.getElementById('selectItemModal').style.display = 'block';
-    carregarItensParaSelecao();
+    const modal = document.getElementById('selectItemModal');
+    if (modal) {
+        modal.style.display = 'block';
+        carregarItensParaSelecao();
+    }
 }
 
 function closeSelectItemModal() {
-    document.getElementById('selectItemModal').style.display = 'none';
+    const modal = document.getElementById('selectItemModal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
 }
 
 function openAddItemToPedidoModal(itemId, itemNome) {
-    document.getElementById('selectedItemId').value = itemId;
-    document.getElementById('selectedItemName').textContent = `Item: ${itemNome}`;
-    document.getElementById('addItemToPedidoModal').style.display = 'block';
+    const modal = document.getElementById('addItemToPedidoModal');
+    if (modal) {
+        document.getElementById('selectedItemId').value = itemId;
+        document.getElementById('selectedItemName').textContent = `Item: ${itemNome}`;
+        modal.style.display = 'block';
+    }
 }
 
 function closeAddItemToPedidoModal() {
-    document.getElementById('addItemToPedidoModal').style.display = 'none';
-    document.getElementById('addItemToPedidoForm').reset();
+    const modal = document.getElementById('addItemToPedidoModal');
+    if (modal) {
+        modal.style.display = 'none';
+        const form = document.getElementById('addItemToPedidoForm');
+        if (form) form.reset();
+    }
 }
 
 function openItensModal() {
-    document.getElementById('itensModal').style.display = 'block';
-    carregarItens();
-    carregarProcessos();
+    const modal = document.getElementById('itensModal');
+    if (modal) {
+        modal.style.display = 'block';
+        carregarItens();
+        carregarProcessos();
+    }
 }
 
 function closeItensModal() {
-    document.getElementById('itensModal').style.display = 'none';
+    const modal = document.getElementById('itensModal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
+function openProcessosModal() {
+    const modal = document.getElementById('processosModal');
+    if (modal) {
+        modal.style.display = 'block';
+        carregarProcessosList();
+    }
+}
+
+function closeProcessosModal() {
+    const modal = document.getElementById('processosModal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
+function openEditProcessoModal(processoId, nome, descricao, ordem) {
+    const modal = document.getElementById('editProcessoModal');
+    if (modal) {
+        document.getElementById('editProcessoId').value = processoId;
+        document.getElementById('editProcessoNome').value = nome;
+        document.getElementById('editProcessoDescricao').value = descricao || '';
+        document.getElementById('editProcessoOrdem').value = ordem;
+        modal.style.display = 'block';
+    }
+}
+
+function closeEditProcessoModal() {
+    const modal = document.getElementById('editProcessoModal');
+    if (modal) {
+        modal.style.display = 'none';
+        const form = document.getElementById('editProcessoForm');
+        if (form) form.reset();
+    }
 }
 
 function openItemProcessosModal(itemId, itemNome) {
-    document.getElementById('currentItemId').value = itemId;
-    document.getElementById('itemProcessosTitle').textContent = `Processos do Item: ${itemNome}`;
-    document.getElementById('itemProcessosModal').style.display = 'block';
-    carregarProcessosDoItem(itemId);
+    const modal = document.getElementById('itemProcessosModal');
+    if (modal) {
+        document.getElementById('currentItemId').value = itemId;
+        document.getElementById('itemProcessosTitle').textContent = `Processos do Item: ${itemNome}`;
+        modal.style.display = 'block';
+        carregarProcessosDoItem(itemId);
+    }
 }
 
 function closeItemProcessosModal() {
-    document.getElementById('itemProcessosModal').style.display = 'none';
-    document.getElementById('addItemProcessoForm').reset();
+    const modal = document.getElementById('itemProcessosModal');
+    if (modal) {
+        modal.style.display = 'none';
+        const form = document.getElementById('addItemProcessoForm');
+        if (form) form.reset();
+    }
 }
 
-// Funções de Tabs
+// === FUNÇÕES DE TABS ===
+
 function showTab(tabName) {
     // Esconder todas as tabs
     document.querySelectorAll('.tab-content').forEach(tab => {
@@ -109,17 +249,22 @@ function showTab(tabName) {
     });
     
     // Mostrar tab selecionada
-    document.getElementById(tabName).classList.add('active');
+    const targetTab = document.getElementById(tabName);
+    if (targetTab) {
+        targetTab.classList.add('active');
+    }
     
     // Ativar botão correspondente
-    event.target.classList.add('active');
+    if (event && event.target) {
+        event.target.classList.add('active');
+    }
 }
 
-// Funções de API com melhor tratamento de erros
+// === FUNÇÕES DE API ===
+
 async function apiRequest(url, options = {}) {
     try {
         console.log('Fazendo requisição para:', url);
-        console.log('Opções:', options);
         
         const response = await fetch(url, {
             headers: {
@@ -129,33 +274,25 @@ async function apiRequest(url, options = {}) {
             ...options
         });
         
-        console.log('Status da resposta:', response.status);
-        
-        // Verificar se a resposta é válida
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         
-        // Obter o texto da resposta primeiro
         const responseText = await response.text();
-        console.log('Resposta bruta:', responseText);
         
-        // Verificar se é JSON válido
         if (!responseText.trim()) {
             throw new Error('Resposta vazia do servidor');
         }
         
         try {
             const data = JSON.parse(responseText);
-            console.log('Dados parseados:', data);
             return data;
         } catch (parseError) {
             console.error('Erro ao parsear JSON:', parseError);
-            console.error('Resposta recebida:', responseText);
+            console.error('Resposta:', responseText.substring(0, 500));
             
-            // Se não é JSON, pode ser uma página de erro do PHP
             if (responseText.includes('<!DOCTYPE') || responseText.includes('<html')) {
-                throw new Error('Servidor retornou HTML em vez de JSON. Verifique os logs do PHP.');
+                throw new Error('Servidor retornou HTML. Verifique a configuração do PHP.');
             }
             
             throw new Error('Resposta inválida do servidor');
@@ -163,75 +300,80 @@ async function apiRequest(url, options = {}) {
         
     } catch (error) {
         console.error('Erro na API:', error);
-        
-        // Mostrar erro mais específico
-        if (error.name === 'TypeError' && error.message.includes('fetch')) {
-            mostrarMensagem('Erro de conexão. Verifique se o servidor está rodando.', 'error');
-        } else if (error.message.includes('HTML')) {
-            mostrarMensagem('Erro no servidor PHP. Verifique a configuração do banco de dados.', 'error');
-        } else {
-            mostrarMensagem(error.message || 'Erro de comunicação com o servidor', 'error');
-        }
-        
+        mostrarMensagem(error.message || 'Erro de comunicação com o servidor', 'error');
         return null;
     }
 }
 
-// Carregar dados
+// === CARREGAR DADOS ===
+
 async function carregarPedidos() {
+    console.log('Carregando pedidos...');
     mostrarLoading('pedidosTableBody');
     
-    const data = await apiRequest('api.php?action=get_pedidos');
+    const data = await apiRequest(`${API_BASE_URL}?action=get_pedidos`);
     
-    if (data) {
+    if (data && Array.isArray(data)) {
         const tbody = document.getElementById('pedidosTableBody');
-        tbody.innerHTML = '';
-        
-        data.forEach(pedido => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${formatarData(pedido.data_entrada)}</td>
-                <td>${formatarData(pedido.data_entrega)}</td>
-                <td>${pedido.codigo_pedido}</td>
-                <td>${pedido.cliente}</td>
-                <td>
-                    <span class="status-${pedido.processo_atual}" onclick="alterarProcessoPedido(${pedido.id}, '${pedido.processo_atual}')" style="cursor: pointer;" title="Clique para avançar processo">
-                        ${capitalizeFirst(pedido.processo_atual)}
-                    </span>
-                </td>
-                <td>${pedido.total_itens} item(s)</td>
-                <td>
-                    <button class="btn-edit" onclick="verItensPedido(${pedido.id})">Ver Itens</button>
-                    <button class="btn-delete" onclick="excluirPedido(${pedido.id})">Excluir</button>
-                </td>
-            `;
-            tbody.appendChild(row);
-        });
+        if (tbody) {
+            tbody.innerHTML = '';
+            
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 20px; color: #666;">Nenhum pedido encontrado</td></tr>';
+            } else {
+                data.forEach(pedido => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${formatarData(pedido.data_entrada)}</td>
+                        <td>${formatarData(pedido.data_entrega)}</td>
+                        <td><strong>${pedido.codigo_pedido}</strong></td>
+                        <td>${pedido.cliente}</td>
+                        <td>
+                            <span class="status-${pedido.processo_atual}" 
+                                  onclick="alterarProcessoPedido(${pedido.id}, '${pedido.processo_atual}')" 
+                                  title="Clique para avançar processo">
+                                ${capitalizeFirst(pedido.processo_atual)}
+                            </span>
+                        </td>
+                        <td>${pedido.total_itens} item(s)</td>
+                        <td>
+                            <button class="btn-edit" onclick="verItensPedido(${pedido.id})" title="Ver itens">👁️</button>
+                            <button class="btn-delete" onclick="excluirPedido(${pedido.id})" title="Excluir">🗑️</button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            }
+        }
+        console.log(`${data.length} pedidos carregados`);
     }
 }
 
 async function carregarItens() {
-    const data = await apiRequest('api.php?action=get_itens');
+    console.log('Carregando itens...');
+    const data = await apiRequest(`${API_BASE_URL}?action=get_itens`);
     
-    if (data) {
+    if (data && Array.isArray(data)) {
         itensDisponiveis = data;
         const tbody = document.getElementById('itensTableBody');
-        tbody.innerHTML = '';
-        
-        data.forEach(item => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${item.nome}</td>
-                <td>${item.descricao || '-'}</td>
-                <td>
-                    <button class="btn-edit" onclick="openItemProcessosModal(${item.id}, '${item.nome}')">Configurar</button>
-                </td>
-                <td>
-                    <button class="btn-delete" onclick="excluirItem(${item.id})">Excluir</button>
-                </td>
-            `;
-            tbody.appendChild(row);
-        });
+        if (tbody) {
+            tbody.innerHTML = '';
+            
+            data.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><strong>${item.nome}</strong></td>
+                    <td>${item.descricao || '-'}</td>
+                    <td>${item.total_processos} processo(s)</td>
+                    <td>
+                        <button class="btn-edit" onclick="openItemProcessosModal(${item.id}, '${escapeString(item.nome)}')" title="Configurar processos">⚙️</button>
+                        <button class="btn-delete" onclick="excluirItem(${item.id})" title="Excluir item">🗑️</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+        console.log(`${data.length} itens carregados`);
     }
 }
 
@@ -241,53 +383,16 @@ async function carregarItensParaSelecao() {
     }
     
     const tbody = document.getElementById('selectItemBody');
-    tbody.innerHTML = '';
-    
-    itensDisponiveis.forEach(item => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>${item.nome}</td>
-            <td>${item.descricao || '-'}</td>
-            <td>
-                <button class="btn-save" onclick="openAddItemToPedidoModal(${item.id}, '${item.nome}')">Selecionar</button>
-            </td>
-        `;
-        tbody.appendChild(row);
-    });
-}
-
-async function carregarProcessos() {
-    const data = await apiRequest('api.php?action=get_processos');
-    
-    if (data) {
-        processosDisponiveis = data;
-        const select = document.getElementById('processoSelect');
-        select.innerHTML = '<option value="">Selecione o processo</option>';
-        
-        data.forEach(processo => {
-            const option = document.createElement('option');
-            option.value = processo.id;
-            option.textContent = processo.nome;
-            select.appendChild(option);
-        });
-    }
-}
-
-async function carregarProcessosDoItem(itemId) {
-    const data = await apiRequest(`api.php?action=get_item_processos&item_id=${itemId}`);
-    
-    if (data) {
-        const tbody = document.getElementById('itemProcessosBody');
+    if (tbody) {
         tbody.innerHTML = '';
         
-        data.forEach(processo => {
+        itensDisponiveis.forEach(item => {
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td>${processo.ordem}</td>
-                <td>${processo.processo_nome}</td>
-                <td>${processo.observacoes || '-'}</td>
+                <td><strong>${item.nome}</strong></td>
+                <td>${item.descricao || '-'}</td>
                 <td>
-                    <button class="btn-delete" onclick="removerProcessoDoItem(${processo.id})">Remover</button>
+                    <button class="btn-save" onclick="openAddItemToPedidoModal(${item.id}, '${escapeString(item.nome)}')">Selecionar</button>
                 </td>
             `;
             tbody.appendChild(row);
@@ -295,8 +400,96 @@ async function carregarProcessosDoItem(itemId) {
     }
 }
 
-// Salvar dados
+async function carregarProcessos() {
+    console.log('Carregando processos...');
+    const data = await apiRequest(`${API_BASE_URL}?action=get_processos`);
+    
+    if (data && Array.isArray(data)) {
+        processosDisponiveis = data;
+        const select = document.getElementById('processoSelect');
+        if (select) {
+            select.innerHTML = '<option value="">Selecione o processo</option>';
+            
+            data.forEach(processo => {
+                const option = document.createElement('option');
+                option.value = processo.id;
+                option.textContent = processo.nome;
+                select.appendChild(option);
+            });
+        }
+        console.log(`${data.length} processos carregados`);
+    }
+}
+
+async function carregarProcessosList() {
+    console.log('Carregando lista de processos...');
+    const data = await apiRequest(`${API_BASE_URL}?action=get_processos`);
+    
+    if (data && Array.isArray(data)) {
+        const tbody = document.getElementById('processosTableBody');
+        if (tbody) {
+            tbody.innerHTML = '';
+            
+            data.forEach(processo => {
+                const processosEssenciais = ['corte', 'personalização', 'produção', 'expedição'];
+                const isEssencial = processosEssenciais.includes(processo.nome.toLowerCase());
+                const tipoLabel = isEssencial ? 
+                    '<span style="color: #4CAF50; font-weight: bold;">Sistema</span>' : 
+                    '<span style="color: #666;">Personalizado</span>';
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><strong>${processo.ordem}</strong></td>
+                    <td>${processo.nome}</td>
+                    <td>${processo.descricao || '-'}</td>
+                    <td>${processo.total_usos} uso(s)</td>
+                    <td>${tipoLabel}</td>
+                    <td>
+                        <button class="btn-edit" onclick="openEditProcessoModal(${processo.id}, '${escapeString(processo.nome)}', '${escapeString(processo.descricao || '')}', ${processo.ordem})" title="Editar processo">✏️</button>
+                        ${!isEssencial ? `<button class="btn-delete" onclick="excluirProcesso(${processo.id})" title="Excluir processo">🗑️</button>` : '<span style="color: #ccc;" title="Processos do sistema não podem ser excluídos">🔒</span>'}
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+        console.log(`${data.length} processos carregados`);
+    }
+}
+
+async function carregarProcessosDoItem(itemId) {
+    console.log('Carregando processos do item:', itemId);
+    const data = await apiRequest(`${API_BASE_URL}?action=get_item_processos&item_id=${itemId}`);
+    
+    if (data && Array.isArray(data)) {
+        const tbody = document.getElementById('itemProcessosBody');
+        if (tbody) {
+            tbody.innerHTML = '';
+            
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 20px; color: #666;">Nenhum processo configurado</td></tr>';
+            } else {
+                data.forEach(processo => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td><strong>${processo.ordem}</strong></td>
+                        <td>${processo.processo_nome}</td>
+                        <td>${processo.observacoes || '-'}</td>
+                        <td>
+                            <button class="btn-delete" onclick="removerProcessoDoItem(${processo.id})" title="Remover processo">🗑️</button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            }
+        }
+        console.log(`${data.length} processos do item carregados`);
+    }
+}
+
+// === SALVAR DADOS ===
+
 async function salvarPedido() {
+    console.log('Salvando pedido...');
     const formData = new FormData(document.getElementById('addPedidoForm'));
     
     const pedidoData = {
@@ -308,7 +501,9 @@ async function salvarPedido() {
         itens: pedidoItens
     };
     
-    const resultado = await apiRequest('api.php?action=add_pedido', {
+    console.log('Dados do pedido:', pedidoData);
+    
+    const resultado = await apiRequest(`${API_BASE_URL}?action=add_pedido`, {
         method: 'POST',
         body: JSON.stringify(pedidoData)
     });
@@ -323,6 +518,7 @@ async function salvarPedido() {
 }
 
 async function salvarItem() {
+    console.log('Salvando item...');
     const formData = new FormData(document.getElementById('addItemForm'));
     
     const itemData = {
@@ -330,7 +526,7 @@ async function salvarItem() {
         descricao: formData.get('descricao')
     };
     
-    const resultado = await apiRequest('api.php?action=add_item', {
+    const resultado = await apiRequest(`${API_BASE_URL}?action=add_item`, {
         method: 'POST',
         body: JSON.stringify(itemData)
     });
@@ -341,6 +537,57 @@ async function salvarItem() {
         carregarItens();
     } else {
         mostrarMensagem(resultado?.error || 'Erro ao salvar item', 'error');
+    }
+}
+
+async function salvarProcesso() {
+    console.log('Salvando processo...');
+    const formData = new FormData(document.getElementById('addProcessoForm'));
+    
+    const processoData = {
+        nome: formData.get('nome'),
+        descricao: formData.get('descricao'),
+        ordem: formData.get('ordem') ? parseInt(formData.get('ordem')) : null
+    };
+    
+    const resultado = await apiRequest(`${API_BASE_URL}?action=add_processo`, {
+        method: 'POST',
+        body: JSON.stringify(processoData)
+    });
+    
+    if (resultado && resultado.success) {
+        mostrarMensagem('Processo criado com sucesso!', 'success');
+        document.getElementById('addProcessoForm').reset();
+        carregarProcessosList();
+        carregarProcessos(); // Atualizar select também
+    } else {
+        mostrarMensagem(resultado?.error || 'Erro ao criar processo', 'error');
+    }
+}
+
+async function atualizarProcesso() {
+    console.log('Atualizando processo...');
+    const processoId = document.getElementById('editProcessoId').value;
+    const formData = new FormData(document.getElementById('editProcessoForm'));
+    
+    const processoData = {
+        nome: formData.get('nome'),
+        descricao: formData.get('descricao'),
+        ordem: parseInt(formData.get('ordem'))
+    };
+    
+    const resultado = await apiRequest(`${API_BASE_URL}?action=update_processo&id=${processoId}`, {
+        method: 'PUT',
+        body: JSON.stringify(processoData)
+    });
+    
+    if (resultado && resultado.success) {
+        mostrarMensagem('Processo atualizado com sucesso!', 'success');
+        closeEditProcessoModal();
+        carregarProcessosList();
+        carregarProcessos(); // Atualizar select também
+    } else {
+        mostrarMensagem(resultado?.error || 'Erro ao atualizar processo', 'error');
     }
 }
 
@@ -367,9 +614,12 @@ function adicionarItemAoPedido() {
     atualizarTabelaItensPedido();
     closeAddItemToPedidoModal();
     closeSelectItemModal();
+    
+    console.log('Item adicionado ao pedido:', novoItem);
 }
 
 async function adicionarProcessoAoItem() {
+    console.log('Adicionando processo ao item...');
     const formData = new FormData(document.getElementById('addItemProcessoForm'));
     const itemId = document.getElementById('currentItemId').value;
     
@@ -380,7 +630,7 @@ async function adicionarProcessoAoItem() {
         observacoes: formData.get('observacoes')
     };
     
-    const resultado = await apiRequest('api.php?action=add_item_processo', {
+    const resultado = await apiRequest(`${API_BASE_URL}?action=add_item_processo`, {
         method: 'POST',
         body: JSON.stringify(processoData)
     });
@@ -394,54 +644,14 @@ async function adicionarProcessoAoItem() {
     }
 }
 
-// Funções auxiliares
-function atualizarTabelaItensPedido() {
-    const tbody = document.getElementById('pedidoItensBody');
-    tbody.innerHTML = '';
-    
-    pedidoItens.forEach((item, index) => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>${item.item_nome}</td>
-            <td>${item.quantidade}</td>
-            <td>${item.observacoes || '-'}</td>
-            <td>
-                <button class="btn-delete" onclick="removerItemDoPedido(${index})">Remover</button>
-            </td>
-        `;
-        tbody.appendChild(row);
-    });
-}
-
-function removerItemDoPedido(index) {
-    pedidoItens.splice(index, 1);
-    atualizarTabelaItensPedido();
-}
-
-async function removerProcessoDoItem(processoId) {
-    if (!confirm('Tem certeza que deseja remover este processo?')) {
-        return;
-    }
-    
-    const resultado = await apiRequest(`api.php?action=delete_item_processo&id=${processoId}`, {
-        method: 'DELETE'
-    });
-    
-    if (resultado && resultado.success) {
-        mostrarMensagem('Processo removido com sucesso!', 'success');
-        const itemId = document.getElementById('currentItemId').value;
-        carregarProcessosDoItem(itemId);
-    } else {
-        mostrarMensagem('Erro ao remover processo', 'error');
-    }
-}
+// === EXCLUSÕES ===
 
 async function excluirPedido(pedidoId) {
     if (!confirm('Tem certeza que deseja excluir este pedido? Todos os itens associados também serão removidos.')) {
         return;
     }
     
-    const resultado = await apiRequest(`api.php?action=delete_pedido&id=${pedidoId}`, {
+    const resultado = await apiRequest(`${API_BASE_URL}?action=delete_pedido&id=${pedidoId}`, {
         method: 'DELETE'
     });
     
@@ -454,27 +664,117 @@ async function excluirPedido(pedidoId) {
 }
 
 async function excluirItem(itemId) {
-    if (!confirm('Tem certeza que deseja excluir este item? Todos os processos associados também serão removidos.')) {
+    if (!confirm('Tem certeza que deseja excluir este item?\n\nAtenção: Itens que estão sendo usados em pedidos não podem ser excluídos.\nTodos os processos (receitas) associados também serão removidos.')) {
         return;
     }
     
-    const resultado = await apiRequest(`api.php?action=delete_item&id=${itemId}`, {
+    const resultado = await apiRequest(`${API_BASE_URL}?action=delete_item&id=${itemId}`, {
         method: 'DELETE'
     });
     
     if (resultado && resultado.success) {
-        mostrarMensagem('Item excluído com sucesso!', 'success');
+        let mensagem = 'Item excluído com sucesso!';
+        if (resultado.processos_removidos > 0) {
+            mensagem += `\n${resultado.processos_removidos} processo(s) da receita também foram removidos.`;
+        }
+        mostrarMensagem(mensagem, 'success');
         carregarItens();
+    } else if (resultado && resultado.error) {
+        let mensagem = resultado.error;
+        if (resultado.details) {
+            mensagem += `\n\n${resultado.details}`;
+        }
+        if (resultado.count) {
+            mensagem += `\n\nTotal de usos: ${resultado.count}`;
+        }
+        mostrarMensagem(mensagem, 'error');
     } else {
-        mostrarMensagem(resultado?.error || 'Erro ao excluir item', 'error');
+        mostrarMensagem('Erro ao excluir item', 'error');
+    }
+}
+
+async function excluirProcesso(processoId) {
+    if (!confirm('Tem certeza que deseja excluir este processo?\n\nAtenção: Processos que estão sendo usados em receitas de itens ou pedidos não podem ser excluídos.')) {
+        return;
+    }
+    
+    const resultado = await apiRequest(`${API_BASE_URL}?action=delete_processo&id=${processoId}`, {
+        method: 'DELETE'
+    });
+    
+    if (resultado && resultado.success) {
+        mostrarMensagem('Processo excluído com sucesso!', 'success');
+        carregarProcessosList();
+        carregarProcessos(); // Atualizar select também
+    } else if (resultado && resultado.error) {
+        let mensagem = resultado.error;
+        if (resultado.details) {
+            mensagem += `\n\n${resultado.details}`;
+        }
+        if (resultado.count) {
+            mensagem += `\n\nTotal de usos: ${resultado.count}`;
+        }
+        mostrarMensagem(mensagem, 'error');
+    } else {
+        mostrarMensagem('Erro ao excluir processo', 'error');
+    }
+}
+
+// === FUNÇÕES AUXILIARES ===
+
+function atualizarTabelaItensPedido() {
+    const tbody = document.getElementById('pedidoItensBody');
+    if (tbody) {
+        tbody.innerHTML = '';
+        
+        if (pedidoItens.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 20px; color: #666;">Nenhum item adicionado</td></tr>';
+        } else {
+            pedidoItens.forEach((item, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><strong>${item.item_nome}</strong></td>
+                    <td>${item.quantidade}</td>
+                    <td>${item.observacoes || '-'}</td>
+                    <td>
+                        <button class="btn-delete" onclick="removerItemDoPedido(${index})" title="Remover item">🗑️</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+    }
+}
+
+function removerItemDoPedido(index) {
+    pedidoItens.splice(index, 1);
+    atualizarTabelaItensPedido();
+    console.log('Item removido do pedido, restam:', pedidoItens.length);
+}
+
+async function removerProcessoDoItem(processoId) {
+    if (!confirm('Tem certeza que deseja remover este processo?')) {
+        return;
+    }
+    
+    const resultado = await apiRequest(`${API_BASE_URL}?action=delete_item_processo&id=${processoId}`, {
+        method: 'DELETE'
+    });
+    
+    if (resultado && resultado.success) {
+        mostrarMensagem('Processo removido com sucesso!', 'success');
+        const itemId = document.getElementById('currentItemId').value;
+        carregarProcessosDoItem(itemId);
+    } else {
+        mostrarMensagem('Erro ao remover processo', 'error');
     }
 }
 
 async function verItensPedido(pedidoId) {
-    const data = await apiRequest(`api.php?action=get_pedido_itens&pedido_id=${pedidoId}`);
+    console.log('Visualizando itens do pedido:', pedidoId);
+    const data = await apiRequest(`${API_BASE_URL}?action=get_pedido_itens&pedido_id=${pedidoId}`);
     
-    if (data) {
-        // Criar modal para mostrar itens do pedido
+    if (data && Array.isArray(data)) {
         const modalHtml = `
             <div id="viewItensModal" class="modal" style="display: block;">
                 <div class="modal-content">
@@ -482,32 +782,32 @@ async function verItensPedido(pedidoId) {
                         <h2>Itens do Pedido</h2>
                         <span class="close" onclick="closeViewItensModal()">&times;</span>
                     </div>
-                    <table class="tablePedidos">
-                        <thead>
-                            <tr>
-                                <th>Item</th>
-                                <th>Descrição</th>
-                                <th>Quantidade</th>
-                                <th>Observações</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${data.map(item => `
+                    <div style="padding: 25px;">
+                        <table class="tablePedidos">
+                            <thead>
                                 <tr>
-                                    <td>${item.item_nome}</td>
-                                    <td>${item.item_descricao || '-'}</td>
-                                    <td>${item.quantidade}</td>
-                                    <td>${item.observacoes || '-'}</td>
+                                    <th>Item</th>
+                                    <th>Descrição</th>
+                                    <th>Quantidade</th>
+                                    <th>Observações</th>
                                 </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                    ${data.length === 0 ? '<p style="text-align: center; padding: 20px;">Nenhum item encontrado para este pedido.</p>' : ''}
+                            </thead>
+                            <tbody>
+                                ${data.length > 0 ? data.map(item => `
+                                    <tr>
+                                        <td><strong>${item.item_nome}</strong></td>
+                                        <td>${item.item_descricao || '-'}</td>
+                                        <td>${item.quantidade}</td>
+                                        <td>${item.observacoes || '-'}</td>
+                                    </tr>
+                                `).join('') : '<tr><td colspan="4" style="text-align: center; padding: 20px;">Nenhum item encontrado</td></tr>'}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         `;
         
-        // Inserir modal no body
         document.body.insertAdjacentHTML('beforeend', modalHtml);
     }
 }
@@ -519,7 +819,6 @@ function closeViewItensModal() {
     }
 }
 
-// Função para alterar processo do pedido rapidamente
 async function alterarProcessoPedido(pedidoId, processoAtual) {
     const processos = ['corte', 'personalização', 'produção', 'expedição'];
     const processoAtualIndex = processos.indexOf(processoAtual);
@@ -528,7 +827,7 @@ async function alterarProcessoPedido(pedidoId, processoAtual) {
         const novoProcesso = processos[processoAtualIndex + 1];
         
         if (confirm(`Avançar processo de "${capitalizeFirst(processoAtual)}" para "${capitalizeFirst(novoProcesso)}"?`)) {
-            const resultado = await apiRequest(`api.php?action=update_processo_pedido&id=${pedidoId}`, {
+            const resultado = await apiRequest(`${API_BASE_URL}?action=update_processo_pedido&id=${pedidoId}`, {
                 method: 'PUT',
                 body: JSON.stringify({
                     processo_atual: novoProcesso
@@ -548,17 +847,26 @@ async function alterarProcessoPedido(pedidoId, processoAtual) {
 }
 
 function limparFormularioPedido() {
-    document.getElementById('addPedidoForm').reset();
-    pedidoItens = [];
-    atualizarTabelaItensPedido();
-    
-    // Definir data de hoje como padrão
-    const hoje = new Date().toISOString().split('T')[0];
-    document.getElementById('dataEntrada').value = hoje;
+    const form = document.getElementById('addPedidoForm');
+    if (form) {
+        form.reset();
+        pedidoItens = [];
+        atualizarTabelaItensPedido();
+        
+        // Definir data de hoje como padrão
+        const hoje = new Date().toISOString().split('T')[0];
+        const dataEntrada = document.getElementById('dataEntrada');
+        if (dataEntrada) {
+            dataEntrada.value = hoje;
+        }
+    }
 }
 
 function mostrarLoading(elementId) {
-    document.getElementById(elementId).innerHTML = '<tr><td colspan="100%" class="loading">Carregando...</td></tr>';
+    const element = document.getElementById(elementId);
+    if (element) {
+        element.innerHTML = '<tr><td colspan="100%" class="loading">⏳ Carregando...</td></tr>';
+    }
 }
 
 function mostrarMensagem(mensagem, tipo) {
@@ -571,6 +879,9 @@ function mostrarMensagem(mensagem, tipo) {
     // Criar nova mensagem
     const div = document.createElement('div');
     div.className = `message ${tipo}`;
+    if (mensagem.includes('\n')) {
+        div.className += ' detailed';
+    }
     div.textContent = mensagem;
     
     // Inserir no topo da página
@@ -578,17 +889,28 @@ function mostrarMensagem(mensagem, tipo) {
     
     // Remover após 5 segundos
     setTimeout(() => {
-        div.remove();
+        if (div.parentNode) {
+            div.remove();
+        }
     }, 5000);
+    
+    console.log(`Mensagem ${tipo}:`, mensagem);
 }
 
 function formatarData(dataString) {
+    if (!dataString) return '-';
     const data = new Date(dataString + 'T00:00:00');
     return data.toLocaleDateString('pt-BR');
 }
 
 function capitalizeFirst(str) {
+    if (!str) return '';
     return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+function escapeString(str) {
+    if (!str) return '';
+    return str.replace(/'/g, '\\\'').replace(/"/g, '&quot;');
 }
 
 // Event listeners para fechar modais clicando fora
@@ -599,4 +921,16 @@ window.onclick = function(event) {
             modal.style.display = 'none';
         }
     });
-}
+};
+
+// Adicionar suporte para ESC fechar modais
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        const modaisAbertos = document.querySelectorAll('.modal[style*="block"]');
+        modaisAbertos.forEach(modal => {
+            modal.style.display = 'none';
+        });
+    }
+});
+
+console.log('Script carregado - Sistema de Controle de Produção v2.0');

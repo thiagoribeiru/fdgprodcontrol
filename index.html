@@ -5,12 +5,40 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Controle de Produção</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏭</text></svg>">
 </head>
 <body>
-    <div class="botaoTouch" onclick="admClick()">ADMINISTRAÇÃO</div>
-    <div class="botaoTouch">PRODUÇÃO</div>
+    <div class="main-container">
+        <div class="header">
+            <h1>Sistema de Controle de Produção</h1>
+            <p>Gerencie pedidos, itens e processos de forma eficiente</p>
+        </div>
+        
+        <div class="menu-container">
+            <div class="menu-card" onclick="admClick()">
+                <div class="menu-icon">👨‍💼</div>
+                <h2>ADMINISTRAÇÃO</h2>
+                <p>Gerenciar pedidos, itens e processos</p>
+                <div class="menu-arrow">→</div>
+            </div>
+            
+            <div class="menu-card" onclick="producaoClick()">
+                <div class="menu-icon">🏭</div>
+                <h2>PRODUÇÃO</h2>
+                <p>Acompanhar andamento da produção</p>
+                <div class="menu-arrow">→</div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>&copy; 2025 Sistema de Controle de Produção</p>
+        </div>
+    </div>
+
     <script>
-        const admClick = () => window.location.href = "adm.html"
+        const admClick = () => window.location.href = "adm.html";
+        const producaoClick = () => alert("Módulo de Produção em desenvolvimento!");
     </script>
 </body>
 </html>
