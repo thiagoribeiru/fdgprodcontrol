@@ -143,14 +143,6 @@ body {
 }
 
 /* Estilos da página de administração */
-body {
-    font-family: 'Poppins', sans-serif;
-    background: #f8f9fa;
-    color: #333;
-    line-height: 1.6;
-    min-height: 100vh;
-}
-
 .title-container {
     display: flex;
     align-items: center;
@@ -626,6 +618,14 @@ h1 {
     border: 1px solid #f5c6cb;
 }
 
+/* Melhorias nas mensagens de erro/sucesso */
+.message.detailed {
+    white-space: pre-line;
+    text-align: left;
+    max-width: 500px;
+    word-wrap: break-word;
+}
+
 /* Estilos específicos para gerenciamento de processos */
 .processo-badge {
     display: inline-block;
@@ -730,14 +730,6 @@ h1 {
     to { opacity: 1; transform: translateX(-50%) translateY(0); }
 }
 
-/* Melhorias nas mensagens de erro/sucesso */
-.message.detailed {
-    white-space: pre-line;
-    text-align: left;
-    max-width: 500px;
-    word-wrap: break-word;
-}
-
 /* Indicadores visuais para elementos importantes */
 .important-row {
     background: linear-gradient(90deg, transparent, rgba(255, 193, 7, 0.1), transparent);
@@ -756,7 +748,445 @@ h1 {
     font-weight: bold;
 }
 
-/* Melhorias na responsividade para tablets */
+/* Novo layout compacto para o cabeçalho */
+.pedido-info-compact {
+    padding: 20px;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e1e1e1;
+}
+
+.info-row {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+
+.info-card {
+    background: white;
+    padding: 12px 16px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    flex: 1;
+    min-width: 140px;
+    text-align: center;
+}
+
+.info-card label {
+    display: block;
+    font-weight: 600;
+    color: #666;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+}
+
+.info-card span {
+    font-weight: 600;
+    color: #333;
+    font-size: 14px;
+}
+
+.progress-row {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.progress-container {
+    flex: 1;
+}
+
+.progress-container label {
+    display: block;
+    font-weight: 600;
+    color: #666;
+    font-size: 12px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+}
+
+.progress-bar {
+    position: relative;
+    background: #e9ecef;
+    border-radius: 20px;
+    height: 24px;
+    overflow: hidden;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 6px;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(135deg, #4CAF50, #45a049);
+    transition: width 0.3s ease;
+    border-radius: 20px;
+}
+
+.progress-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #333;
+    font-weight: 600;
+    font-size: 12px;
+    text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
+}
+
+.progress-info {
+    font-size: 11px;
+    color: #666;
+    text-align: left;
+}
+
+.actions-compact {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.actions-compact .btn-edit {
+    padding: 8px 16px;
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+/* Estilos para processos agrupados - NOVA SEÇÃO */
+.processos-acompanhamento {
+    padding: 25px;
+}
+
+.processos-acompanhamento h3 {
+    margin-bottom: 20px;
+    color: #333;
+    font-size: 18px;
+    border-bottom: 2px solid #4CAF50;
+    padding-bottom: 10px;
+}
+
+/* Informação sobre ordem global - NOVO */
+.ordem-info {
+    background: #e3f2fd;
+    border: 1px solid #bbdefb;
+    border-radius: 6px;
+    padding: 12px;
+    margin-bottom: 20px;
+    font-size: 13px;
+    color: #1976d2;
+}
+
+.ordem-info small {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Lista de processos */
+.processos-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Item de processo agrupado - ATUALIZADO */
+.processo-grupo-item {
+    display: flex;
+    align-items: center;
+    padding: 16px;
+    border-radius: 10px;
+    border-left: 4px solid #ddd;
+    background: white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+    position: relative;
+    margin-bottom: 12px;
+}
+
+.processo-grupo-item:hover {
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+    transform: translateY(-1px);
+}
+
+.processo-grupo-item.aguardando {
+    border-left-color: #ffc107;
+    background: linear-gradient(90deg, #fff8e1, white);
+}
+
+.processo-grupo-item.em_andamento {
+    border-left-color: #2196F3;
+    background: linear-gradient(90deg, #e3f2fd, white);
+    animation: pulseGlow 2s infinite;
+}
+
+.processo-grupo-item.completo {
+    border-left-color: #4CAF50;
+    background: linear-gradient(90deg, #e8f5e8, white);
+    opacity: 0.9;
+}
+
+/* Indicadores visuais para processos parciais - NOVO */
+.processo-grupo-item.processo-parcial {
+    border-left-style: dashed;
+    background: linear-gradient(90deg, #fff3e0, white);
+}
+
+.processo-grupo-item.processo-parcial .ordem-badge {
+    background: linear-gradient(135deg, #ff9800, #f57c00);
+    box-shadow: 0 3px 8px rgba(255, 152, 0, 0.4);
+}
+
+/* Animação para processos em andamento - ATUALIZADO */
+@keyframes pulseGlow {
+    0% { 
+        border-left-color: #2196F3;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    50% { 
+        border-left-color: #1976D2;
+        box-shadow: 0 4px 16px rgba(33, 150, 243, 0.2);
+    }
+    100% { 
+        border-left-color: #2196F3;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+}
+
+/* Número da ordem - MELHORADO */
+.processo-numero {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 16px;
+}
+
+.ordem-badge {
+    background: linear-gradient(135deg, #4CAF50, #45a049);
+    color: white;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 16px;
+    box-shadow: 0 3px 8px rgba(76, 175, 80, 0.4);
+    border: 3px solid white;
+}
+
+/* Detalhes do processo */
+.processo-detalhes {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.processo-titulo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.processo-nome {
+    font-weight: 600;
+    color: #333;
+    font-size: 16px;
+}
+
+/* Itens agrupados - MELHORADO */
+.itens-agrupados {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+    max-width: 100%;
+}
+
+.item-badge {
+    background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+    color: #1976d2;
+    padding: 6px 12px;
+    border-radius: 16px;
+    font-size: 12px;
+    font-weight: 600;
+    border: 1px solid #90caf9;
+    display: inline-block;
+    margin: 2px;
+    box-shadow: 0 2px 4px rgba(33, 150, 243, 0.1);
+}
+
+/* Indicador para itens que pulam processos - NOVO */
+.processo-item-parcial .item-badge {
+    background: linear-gradient(135deg, #fff3e0, #ffcc02);
+    color: #e65100;
+    border-color: #ffb74d;
+}
+
+/* Linha de status do processo */
+.processo-status-line {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.processo-status-line .status-select {
+    min-width: 160px;
+    padding: 8px 12px;
+    border: 2px solid #e1e1e1;
+    border-radius: 8px;
+    background: white;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.processo-status-line .status-select:focus {
+    outline: none;
+    border-color: #4CAF50;
+    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+}
+
+/* Contador de grupos - MELHORADO */
+.grupo-count {
+    font-size: 12px;
+    color: #666;
+    background: #f5f5f5;
+    padding: 6px 12px;
+    border-radius: 12px;
+    border: 1px solid #e1e1e1;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+/* Datas dos processos */
+.processo-dates {
+    font-size: 11px;
+    color: #666;
+    padding: 4px 8px;
+    background: rgba(0,0,0,0.05);
+    border-radius: 6px;
+    display: inline-block;
+    margin-right: 8px;
+}
+
+/* Observações dos processos */
+.processo-observacoes {
+    font-size: 12px;
+    color: #555;
+    padding: 8px 12px;
+    background: #f8f9fa;
+    border-radius: 6px;
+    border-left: 3px solid #4CAF50;
+    margin-top: 4px;
+}
+
+/* Responsável pelo processo */
+.processo-responsavel {
+    font-size: 11px;
+    color: #666;
+    background: #e3f2fd;
+    padding: 4px 8px;
+    border-radius: 6px;
+    display: inline-block;
+}
+
+/* Ícone de status do processo */
+.processo-status-icon {
+    display: flex;
+    align-items: center;
+    margin-left: 16px;
+}
+
+.status-icon {
+    font-size: 24px;
+    display: inline-block;
+}
+
+.status-icon.waiting {
+    opacity: 0.6;
+}
+
+.status-icon.progress {
+    animation: spin 2s linear infinite;
+}
+
+.status-icon.complete {
+    color: #4CAF50;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Tooltip para agrupamentos - NOVO */
+.processo-grupo-item[title]:hover::after {
+    content: attr(title);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.9);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    white-space: nowrap;
+    z-index: 1000;
+    animation: tooltipSlideIn 0.2s ease;
+}
+
+@keyframes tooltipSlideIn {
+    from { 
+        opacity: 0; 
+        transform: translateX(-50%) translateY(5px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateX(-50%) translateY(0); 
+    }
+}
+
+/* Melhorias no botão de remover item */
+.btn-remove-item {
+    background: #f44336;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 6px 8px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.3s ease;
+}
+
+.btn-remove-item:hover {
+    background: #d32f2f;
+    transform: scale(1.1);
+}
+
+.processo-status-line .btn-remove-item {
+    background: #f44336;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 10px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.3s ease;
+}
+
+.processo-status-line .btn-remove-item:hover {
+    background: #d32f2f;
+    transform: scale(1.05);
+}
+
+/* Responsividade para tablets */
 @media (max-width: 1024px) {
     .title-container {
         flex-wrap: wrap;
@@ -773,132 +1203,84 @@ h1 {
     }
 }
 
-/* Estilos para modo escuro (preparação futura) */
-@media (prefers-color-scheme: dark) {
-    /* Comentado para implementação futura
-    body {
-        background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
-        color: #ecf0f1;
-    }
-    
-    .modal-content {
-        background-color: #34495e;
-        color: #ecf0f1;
-    }
-    
-    .tablePedidos {
-        background: #34495e;
-        color: #ecf0f1;
-    }
-    */
-}width: 100%;
-    border-collapse: collapse;
-    font-family: 'Poppins', sans-serif;
-    font-size: 14px;
-}
-
-.table-itens th {
-    background-color: #f5f5f5;
-    color: #333;
-    padding: 10px;
-    text-align: left;
-    font-weight: bold;
-    border-bottom: 2px solid #ddd;
-}
-
-.table-itens td {
-    padding: 8px 10px;
-    border-bottom: 1px solid #eee;
-}
-
-.table-itens tr:hover {
-    background-color: #f9f9f9;
-}
-
-/* Tabs */
-.tabs {
-    display: flex;
-    border-bottom: 2px solid #ddd;
-    margin: 20px;
-    margin-bottom: 0;
-}
-
-.tab-button {
-    background-color: transparent;
-    border: none;
-    padding: 12px 20px;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: bold;
-    color: #666;
-    border-bottom: 3px solid transparent;
-    transition: all 0.3s;
-}
-
-.tab-button:hover {
-    color: #4CAF50;
-}
-
-.tab-button.active {
-    color: #4CAF50;
-    border-bottom-color: #4CAF50;
-}
-
-.tab-content {
-    display: none;
-    padding: 20px;
-}
-
-.tab-content.active {
-    display: block;
-}
-
-/* Status dos processos */
-.status-corte {
-    background-color: #ff9800;
-    color: white;
-    padding: 4px 8px;
-    border-radius: 12px;
-    font-size: 12px;
-    font-weight: bold;
-}
-
-.status-personalização {
-    background-color: #2196F3;
-    color: white;
-    padding: 4px 8px;
-    border-radius: 12px;
-    font-size: 12px;
-    font-weight: bold;
-}
-
-.status-produção {
-    background-color: #9C27B0;
-    color: white;
-    padding: 4px 8px;
-    border-radius: 12px;
-    font-size: 12px;
-    font-weight: bold;
-}
-
-.status-expedição {
-    background-color: #4CAF50;
-    color: white;
-    padding: 4px 8px;
-    border-radius: 12px;
-    font-size: 12px;
-    font-weight: bold;
-}
-
-/* Loading */
-.loading {
-    text-align: center;
-    padding: 20px;
-    color: #666;
-}
-
-/* Responsividade */
+/* Responsividade para o layout compacto */
 @media (max-width: 768px) {
+    .info-row {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .info-card {
+        min-width: auto;
+        text-align: left;
+    }
+    
+    .progress-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 15px;
+    }
+    
+    .actions-compact {
+        flex-direction: row;
+        justify-content: center;
+    }
+    
+    .processo-grupo-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+    
+    .processo-numero {
+        margin-right: 0;
+        align-self: flex-start;
+    }
+    
+    .processo-titulo {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    
+    .processo-status-line {
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    .processo-status-line .status-select {
+        flex: 1;
+        min-width: auto;
+        margin-right: 10px;
+    }
+    
+    .processo-status-icon {
+        margin-left: 0;
+        align-self: center;
+    }
+    
+    .itens-agrupados {
+        justify-content: flex-start;
+        margin-top: 12px;
+    }
+    
+    .item-badge {
+        font-size: 11px;
+        padding: 4px 8px;
+    }
+    
+    .ordem-info {
+        text-align: center;
+    }
+    
+    .grupo-count {
+        font-size: 11px;
+        padding: 4px 8px;
+    }
+}
+
+/* Responsividade geral para mobile */
+@media (max-width: 480px) {
     .title-container {
         flex-direction: column;
         align-items: flex-start;
@@ -923,24 +1305,1337 @@ h1 {
     .tablePedidos td {
         padding: 6px;
     }
+    
+    .processo-grupo-item {
+        padding: 12px;
+    }
+    
+    .ordem-badge {
+        width: 32px;
+        height: 32px;
+        font-size: 14px;
+    }
+    
+    .processo-nome {
+        font-size: 14px;
+    }
+    
+    .item-badge {
+        font-size: 10px;
+        padding: 3px 6px;
+    }
 }
 
-/* Estilo para mensagens de erro/sucesso */
-.message {
-    padding: 10px;
+/* Estilos para modo escuro (preparação futura) */
+@media (prefers-color-scheme: dark) {
+    /* Comentado para implementação futura
+    body {
+        background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+        color: #ecf0f1;
+    }
+    
+    .modal-content {
+        background-color: #34495e;
+        color: #ecf0f1;
+    }
+    
+    .tablePedidos {
+        background: #34495e;
+        color: #ecf0f1;
+    }
+    */
+}
+
+/* Estilo para mensagens de erro/sucesso - DUPLICADO, REMOVIDO */
+
+/* Estados adicionais para melhor UX */
+.processo-grupo-item.disabled {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.processo-grupo-item.highlight {
+    animation: highlightPulse 1s ease-in-out;
+}
+
+@keyframes highlightPulse {
+    0% { background-color: white; }
+    50% { background-color: #fff3cd; }
+    100% { background-color: white; }
+}
+
+/* Indicadores de prioridade */
+.pedido-urgente .info-card {
+    border-left: 4px solid #f44336;
+}
+
+.pedido-normal .info-card {
+    border-left: 4px solid #4CAF50;
+}
+
+.pedido-baixa .info-card {
+    border-left: 4px solid #9E9E9E;
+}
+
+/* Melhorias de acessibilidade */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Focus indicators melhorados */
+button:focus,
+select:focus,
+input:focus,
+textarea:focus {
+    outline: 2px solid #4CAF50;
+    outline-offset: 2px;
+}
+
+/* Estados de loading melhorados */
+.btn-loading {
+    position: relative;
+    pointer-events: none;
+}
+
+.btn-loading::after {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    top: 50%;
+    left: 50%;
+    margin-left: -8px;
+    margin-top: -8px;
+    border: 2px solid transparent;
+    border-top: 2px solid #ffffff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+/* Melhorias na impressão */
+@media print {
+    .modal,
+    .add-button,
+    .btn-edit,
+    .btn-delete,
+    .btn-cancel {
+        display: none !important;
+    }
+    
+    body {
+        background: white !important;
+        color: black !important;
+    }
+    
+    .tablePedidos {
+        box-shadow: none !important;
+        border: 1px solid #000 !important;
+    }
+    
+    .processo-grupo-item {
+        box-shadow: none !important;
+        border: 1px solid #ccc !important;
+        break-inside: avoid;
+    }
+}
+
+/* Indicadores visuais para ordens duplicadas */
+.ordem-duplicada {
+    background: linear-gradient(135deg, #ffebee, #ffcdd2) !important;
+    color: #c62828 !important;
+    font-weight: bold !important;
+    position: relative;
+}
+
+.ordem-duplicada::after {
+    content: '⚠️';
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 14px;
+}
+
+/* Alert para problemas de ordem */
+.alert-ordem-problemas {
+    background: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeaa7;
+    padding: 15px;
+    border-radius: 8px;
     margin: 10px 0;
-    border-radius: 4px;
+    text-align: center;
+    animation: alertPulse 2s ease-in-out infinite;
+}
+
+@keyframes alertPulse {
+    0%, 100% { background: #fff3cd; }
+    50% { background: #fff8e1; }
+}
+
+/* Modal de reorganização */
+.reorganizacao-info {
+    background: #e3f2fd;
+    border: 1px solid #bbdefb;
+    border-radius: 8px;
+    padding: 15px;
+    margin: 15px 0;
+    border-left: 4px solid #2196F3;
+}
+
+.reorganizacao-info h4 {
+    margin: 0 0 10px 0;
+    color: #1976d2;
+    font-size: 16px;
+}
+
+.reorganizacao-info p {
+    margin: 5px 0;
+    color: #1976d2;
+    font-size: 14px;
+}
+
+/* Destaque para processos movidos */
+.processo-movido {
+    background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+    border-left: 4px solid #4CAF50;
+    animation: processoMovidoGlow 2s ease-in-out;
+}
+
+@keyframes processoMovidoGlow {
+    0% { background: #e8f5e9; }
+    50% { background: #c8e6c9; }
+    100% { background: #e8f5e9; }
+}
+
+/* Input de ordem com validação visual */
+.ordem-input-container {
+    position: relative;
+}
+
+.ordem-input-warning {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #fff3cd;
+    color: #856404;
+    padding: 8px 12px;
+    border-radius: 0 0 8px 8px;
+    border: 1px solid #ffeaa7;
+    border-top: none;
+    font-size: 12px;
+    z-index: 100;
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.ordem-input-ok {
+    border-color: #4CAF50 !important;
+    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1) !important;
+}
+
+.ordem-input-warning-border {
+    border-color: #ffc107 !important;
+    box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.1) !important;
+}
+
+/* Tooltip para ordem de processos */
+.ordem-tooltip {
+    position: relative;
+    cursor: help;
+}
+
+.ordem-tooltip::before {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.9);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    z-index: 1000;
+}
+
+.ordem-tooltip:hover::before {
+    opacity: 1;
+}
+
+/* Lista de processos com numeração visual */
+.processos-numerados {
+    counter-reset: processo-counter;
+}
+
+.processos-numerados .processo-item {
+    counter-increment: processo-counter;
+}
+
+.processos-numerados .processo-item::before {
+    content: counter(processo-counter);
+    background: #4CAF50;
+    color: white;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+/* Indicador de reorganização em progresso */
+.reorganizacao-loading {
+    position: relative;
+    overflow: hidden;
+}
+
+.reorganizacao-loading::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(33, 150, 243, 0.2), transparent);
+    animation: reorganizacaoSweep 1.5s infinite;
+}
+
+@keyframes reorganizacaoSweep {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+/* Botão de verificação de ordem */
+.btn-verificar-ordem {
+    background: linear-gradient(135deg, #ff9800, #f57c00);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    margin-left: 10px;
+}
+
+.btn-verificar-ordem:hover {
+    background: linear-gradient(135deg, #f57c00, #ef6c00);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(255, 152, 0, 0.3);
+}
+
+.btn-verificar-ordem:active {
+    transform: translateY(0);
+}
+
+/* Status da sequência de processos */
+.sequencia-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-left: 10px;
+}
+
+.sequencia-status.ok {
+    background: #e8f5e9;
+    color: #2e7d32;
+    border: 1px solid #4caf50;
+}
+
+.sequencia-status.problemas {
+    background: #fff3e0;
+    color: #e65100;
+    border: 1px solid #ff9800;
+    animation: statusBlink 2s ease-in-out infinite;
+}
+
+@keyframes statusBlink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+/* Preview da reorganização */
+.reorganizacao-preview {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 15px;
+    margin: 15px 0;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.reorganizacao-preview h5 {
+    margin: 0 0 10px 0;
+    color: #495057;
+    font-size: 14px;
+}
+
+.reorganizacao-preview .processo-preview {
+    display: flex;
+    align-items: center;
+    padding: 5px 0;
+    font-size: 13px;
+}
+
+.reorganizacao-preview .ordem-antes {
+    color: #dc3545;
+    text-decoration: line-through;
+    margin-right: 10px;
+}
+
+.reorganizacao-preview .ordem-depois {
+    color: #28a745;
     font-weight: bold;
 }
 
-.message.success {
-    background-color: #d4edda;
+.reorganizacao-preview .processo-nome {
+    flex: 1;
+    margin-left: 10px;
+    color: #495057;
+}
+
+/* Melhorias no modal de reorganização */
+.modal-reorganizacao .modal-header {
+    background: linear-gradient(135deg, #2196F3, #1976D2);
+}
+
+.modal-reorganizacao .reorganizacao-details {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 15px;
+    margin: 15px 0;
+    border-left: 4px solid #2196F3;
+}
+
+.modal-reorganizacao .reorganizacao-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+    margin: 15px 0;
+}
+
+.modal-reorganizacao .stat-card {
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 12px;
+    text-align: center;
+}
+
+.modal-reorganizacao .stat-number {
+    font-size: 24px;
+    font-weight: bold;
+    color: #2196F3;
+    display: block;
+}
+
+.modal-reorganizacao .stat-label {
+    font-size: 12px;
+    color: #6c757d;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Responsividade para reorganização */
+@media (max-width: 768px) {
+    .reorganizacao-info {
+        padding: 10px;
+        margin: 10px 0;
+    }
+    
+    .reorganizacao-stats {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+    
+    .btn-verificar-ordem {
+        padding: 6px 12px;
+        font-size: 12px;
+        margin-left: 5px;
+    }
+    
+    .ordem-tooltip::before {
+        left: 0;
+        transform: none;
+        white-space: normal;
+        max-width: 200px;
+    }
+}
+
+/* Animação para reorganização bem-sucedida */
+.reorganizacao-sucesso {
+    animation: reorganizacaoSucesso 3s ease-in-out;
+}
+
+@keyframes reorganizacaoSucesso {
+    0% { background: white; }
+    20% { background: #e8f5e9; }
+    40% { background: white; }
+    60% { background: #e8f5e9; }
+    80% { background: white; }
+    100% { background: white; }
+}
+
+/* Indicador de processo movido recentemente */
+.processo-recem-movido {
+    position: relative;
+}
+
+.processo-recem-movido::before {
+    content: '🔄';
+    position: absolute;
+    left: -5px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 16px;
+    animation: rotateIcon 2s linear infinite;
+}
+
+@keyframes rotateIcon {
+    from { transform: translateY(-50%) rotate(0deg); }
+    to { transform: translateY(-50%) rotate(360deg); }
+}
+
+.ordem-global-badge {
+    background: linear-gradient(135deg, #4CAF50, #45a049);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.ordem-global-info {
+    background: #f0f8ff;
+    border: 1px solid #e1f5fe;
+    border-radius: 6px;
+    padding: 12px;
+    margin: 15px 0;
+    font-size: 13px;
+    color: #0277bd;
+}
+
+.processo-simplificado {
+    background: #f8f9fa;
+    border-left: 4px solid #4CAF50;
+    padding: 10px 15px;
+    margin: 5px 0;
+    border-radius: 0 6px 6px 0;
+}
+
+.processo-simplificado .processo-nome {
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.processo-simplificado .ordem-info {
+    font-size: 12px;
+    color: #666;
+    margin-top: 5px;
+}
+
+/* CSS Adicional - Melhorias para Versão Otimizada */
+
+/* ===============================
+   INFO BOXES PADRONIZADAS
+   ===============================*/
+
+.info-box {
+    padding: 15px;
+    border-radius: 8px;
+    margin: 15px 0;
+    border-left: 4px solid;
+}
+
+.info-box h4 {
+    margin: 0 0 10px 0;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.info-box p {
+    margin: 0;
+    font-size: 14px;
+}
+
+.info-box ul {
+    margin: 10px 0 0 20px;
+    font-size: 14px;
+}
+
+.info-box li {
+    margin: 5px 0;
+}
+
+/* Variações das info boxes */
+.ordem-global-info {
+    background: #e3f2fd;
+    border-left-color: #2196F3;
+    color: #1976d2;
+}
+
+.reorganizacao-info {
+    background: #e3f2fd;
+    border-left-color: #2196F3;
+    color: #1976d2;
+}
+
+.reorganizacao-edit-info {
+    background: #e3f2fd;
+    border-left-color: #2196F3;
+    color: #1976d2;
+    margin: 20px 25px;
+}
+
+.warning-info {
+    background: #fff3cd;
+    border-left-color: #ffc107;
+    color: #856404;
+}
+
+.success-info {
+    background: #d4edda;
+    border-left-color: #4CAF50;
+    color: #155724;
+}
+
+.verification-info {
+    background: #e9ecef;
+    border-left-color: #6c757d;
+    color: #495057;
+}
+
+/* ===============================
+   FEEDBACK DE ORDEM
+   ===============================*/
+
+.ordem-input-container {
+    position: relative;
+}
+
+.ordem-feedback {
+    margin-top: 8px;
+    padding: 8px;
+    border-radius: 6px;
+    font-size: 13px;
+    display: none;
+}
+
+.feedback-success {
+    background: #d4edda;
     color: #155724;
     border: 1px solid #c3e6cb;
 }
 
-.message.error {
-    background-color: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
+.feedback-warning {
+    background: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeaa7;
+}
+
+.feedback-info {
+    background: #e3f2fd;
+    color: #1976d2;
+    border: 1px solid #bbdefb;
+}
+
+/* ===============================
+   FIELD HINTS
+   ===============================*/
+
+.field-hint {
+    display: block;
+    margin-top: 5px;
+    font-size: 12px;
+    color: #666;
+    font-style: italic;
+}
+
+/* ===============================
+   LABELS E BADGES
+   ===============================*/
+
+.ordem-global-label {
+    color: #666;
+    font-size: 12px;
+    font-weight: normal;
+}
+
+.tipo-sistema {
+    color: #4CAF50;
+    font-weight: bold;
+    font-size: 12px;
+}
+
+.tipo-personalizado {
+    color: #666;
+    font-size: 12px;
+}
+
+.processo-protegido {
+    color: #ccc;
+    font-size: 14px;
+    cursor: help;
+}
+
+/* ===============================
+   ALERTAS NA TABELA
+   ===============================*/
+
+.alert-ordem-duplicada {
+    background: #fff3cd !important;
+    color: #856404 !important;
+    text-align: center;
+    padding: 15px;
+    font-weight: 600;
+    border-left: 4px solid #ffc107;
+}
+
+.ordem-duplicada {
+    background: #ffebee !important;
+    color: #c62828 !important;
+    font-weight: bold;
+}
+
+/* ===============================
+   VERIFICAÇÃO DE ORDEM
+   ===============================*/
+
+.verification-container {
+    text-align: center;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.verification-container h3 {
+    color: #495057;
+    margin-bottom: 15px;
+}
+
+.verification-container p {
+    color: #6c757d;
+    margin-bottom: 20px;
+}
+
+.verification-buttons {
+    margin: 20px 0;
+}
+
+.verification-result {
+    margin-top: 20px;
+    display: none;
+}
+
+.verification-result-content {
+    background: #d4edda;
+    color: #155724;
+    padding: 15px;
+    border-radius: 6px;
+    border-left: 4px solid #4CAF50;
+    white-space: pre-line;
+}
+
+/* ===============================
+   REORGANIZAÇÃO MODAL
+   ===============================*/
+
+.reorganizacao-details {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 4px solid #2196F3;
+    margin: 15px 0;
+}
+
+.reorganizacao-details p {
+    margin: 8px 0;
+}
+
+/* ===============================
+   MELHORIAS RESPONSIVAS
+   ===============================*/
+
+@media (max-width: 768px) {
+    .info-box {
+        padding: 12px;
+        margin: 10px 0;
+    }
+    
+    .info-box h4 {
+        font-size: 14px;
+    }
+    
+    .info-box p, .info-box li {
+        font-size: 13px;
+    }
+    
+    .ordem-feedback {
+        padding: 6px;
+        font-size: 12px;
+    }
+    
+    .verification-container {
+        padding: 15px;
+    }
+    
+    .reorganizacao-details {
+        padding: 12px;
+    }
+}
+
+/* ===============================
+   ANIMAÇÕES SUAVES
+   ===============================*/
+
+.ordem-feedback {
+    animation: fadeIn 0.3s ease;
+}
+
+.verification-result {
+    animation: slideDown 0.4s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+        max-height: 0;
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+        max-height: 200px;
+    }
+}
+
+/* ===============================
+   ESTADOS DE INPUT
+   ===============================*/
+
+input:focus,
+select:focus,
+textarea:focus {
+    outline: none;
+    border-color: #4CAF50;
+    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+    transition: all 0.3s ease;
+}
+
+.ordem-input-ok {
+    border-color: #4CAF50 !important;
+    background: rgba(76, 175, 80, 0.05);
+}
+
+.ordem-input-warning-border {
+    border-color: #ffc107 !important;
+    background: rgba(255, 193, 7, 0.05);
+}
+
+/* ===============================
+   LOADING STATES
+   ===============================*/
+
+.loading {
+    text-align: center;
+    padding: 40px;
+    color: #666;
+    font-style: italic;
+    position: relative;
+}
+
+.loading::after {
+    content: '';
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #4CAF50;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-left: 10px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* ===============================
+   BOTÕES MELHORADOS
+   ===============================*/
+
+.btn-save,
+.btn-cancel,
+.btn-edit,
+.btn-delete {
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-save::before,
+.btn-cancel::before,
+.btn-edit::before,
+.btn-delete::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+}
+
+.btn-save:hover::before,
+.btn-cancel:hover::before,
+.btn-edit:hover::before,
+.btn-delete:hover::before {
+    left: 100%;
+}
+
+.btn-save:active,
+.btn-cancel:active,
+.btn-edit:active,
+.btn-delete:active {
+    transform: scale(0.98);
+}
+
+/* ===============================
+   MELHORIAS NA TABELA
+   ===============================*/
+
+.tablePedidos tbody tr {
+    transition: all 0.3s ease;
+}
+
+.tablePedidos tbody tr:hover {
+    background-color: #e8f5e8;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* ===============================
+   MODAL IMPROVEMENTS
+   ===============================*/
+
+.modal {
+    backdrop-filter: blur(5px);
+    animation: fadeInBackdrop 0.3s ease;
+}
+
+@keyframes fadeInBackdrop {
+    from {
+        opacity: 0;
+        backdrop-filter: blur(0px);
+    }
+    to {
+        opacity: 1;
+        backdrop-filter: blur(5px);
+    }
+}
+
+.modal-content {
+    animation: modalSlideIn 0.3s ease;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-50px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* ===============================
+   PROGRESS BAR MELHORADA
+   ===============================*/
+
+.progress-bar {
+    position: relative;
+    background: linear-gradient(90deg, #e9ecef, #f8f9fa);
+    border-radius: 20px;
+    height: 24px;
+    overflow: hidden;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 6px;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(135deg, #4CAF50, #45a049);
+    transition: width 0.8s ease;
+    border-radius: 20px;
+    position: relative;
+}
+
+.progress-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    animation: progressShine 2s infinite;
+}
+
+@keyframes progressShine {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+/* ===============================
+   STATUS INDICATORS
+   ===============================*/
+
+.status-corte,
+.status-personalização,
+.status-produção,
+.status-expedição {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.status-corte::before,
+.status-personalização::before,
+.status-produção::before,
+.status-expedição::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    transition: left 0.5s;
+}
+
+.status-corte:hover::before,
+.status-personalização:hover::before,
+.status-produção:hover::before,
+.status-expedição:hover::before {
+    left: 100%;
+}
+
+/* ===============================
+   PROCESSO GRUPO ITEMS
+   ===============================*/
+
+.processo-grupo-item {
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.processo-grupo-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+    transition: left 0.5s;
+}
+
+.processo-grupo-item:hover::before {
+    left: 100%;
+}
+
+.processo-grupo-item.em_andamento {
+    animation: pulseGlow 2s infinite;
+}
+
+@keyframes pulseGlow {
+    0% { 
+        border-left-color: #2196F3;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    50% { 
+        border-left-color: #1976D2;
+        box-shadow: 0 4px 16px rgba(33, 150, 243, 0.2);
+    }
+    100% { 
+        border-left-color: #2196F3;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+}
+
+/* ===============================
+   ORDEM BADGE
+   ===============================*/
+
+.ordem-badge {
+    background: linear-gradient(135deg, #4CAF50, #45a049);
+    color: white;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 16px;
+    box-shadow: 0 3px 8px rgba(76, 175, 80, 0.4);
+    border: 3px solid white;
+    transition: all 0.3s ease;
+}
+
+.processo-grupo-item:hover .ordem-badge {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.6);
+}
+
+/* ===============================
+   ITEM BADGES
+   ===============================*/
+
+.item-badge {
+    background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+    color: #1976d2;
+    padding: 6px 12px;
+    border-radius: 16px;
+    font-size: 12px;
+    font-weight: 600;
+    border: 1px solid #90caf9;
+    display: inline-block;
+    margin: 2px;
+    box-shadow: 0 2px 4px rgba(33, 150, 243, 0.1);
+    transition: all 0.3s ease;
+}
+
+.item-badge:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(33, 150, 243, 0.2);
+}
+
+/* ===============================
+   FORM ENHANCEMENTS
+   ===============================*/
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #333;
+    font-size: 14px;
+    transition: color 0.3s ease;
+}
+
+.form-group:focus-within label {
+    color: #4CAF50;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #e1e1e1;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: 'Poppins', sans-serif;
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.form-group input:hover,
+.form-group select:hover,
+.form-group textarea:hover {
+    border-color: #c1c1c1;
+}
+
+/* ===============================
+   TOOLTIP MELHORADO
+   ===============================*/
+
+[title]:hover::after {
+    content: attr(title);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.9);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    white-space: nowrap;
+    z-index: 1000;
+    animation: tooltipFadeIn 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+@keyframes tooltipFadeIn {
+    from { 
+        opacity: 0; 
+        transform: translateX(-50%) translateY(5px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateX(-50%) translateY(0); 
+    }
+}
+
+/* ===============================
+   SCROLL CUSTOMIZADO
+   ===============================*/
+
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #4CAF50, #45a049);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #45a049, #388e3c);
+}
+
+/* ===============================
+   ACCESSIBILITY IMPROVEMENTS
+   ===============================*/
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Focus indicators melhorados */
+button:focus-visible,
+select:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+    outline: 2px solid #4CAF50;
+    outline-offset: 2px;
+}
+
+/* ===============================
+   DARK MODE PREPARATION
+   ===============================*/
+
+@media (prefers-color-scheme: dark) {
+    /* Preparação para modo escuro futuro */
+    /* 
+    .info-box {
+        background: #2d3748;
+        color: #e2e8f0;
+    }
+    
+    .modal-content {
+        background: #1a202c;
+        color: #e2e8f0;
+    }
+    */
+}
+
+/* ===============================
+   PRINT STYLES
+   ===============================*/
+
+@media print {
+    .modal,
+    .add-button,
+    .btn-edit,
+    .btn-delete,
+    .btn-cancel,
+    .info-box {
+        display: none !important;
+    }
+    
+    body {
+        background: white !important;
+        color: black !important;
+    }
+    
+    .tablePedidos {
+        box-shadow: none !important;
+        border: 1px solid #000 !important;
+    }
+    
+    .processo-grupo-item {
+        box-shadow: none !important;
+        border: 1px solid #ccc !important;
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+    
+    .ordem-badge {
+        box-shadow: none !important;
+    }
 }

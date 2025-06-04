@@ -213,28 +213,32 @@
                 <span class="close" onclick="closeItemProcessosModal()">&times;</span>
             </div>
             
+            <!-- Informação sobre ordem global -->
+            <div class="info-box ordem-global-info">
+                <h4>🌐 Ordem Global dos Processos</h4>
+                <p>Os processos seguem automaticamente a <strong>ordem global</strong> definida no sistema. Não é necessário definir ordem específica para cada item.</p>
+            </div>
+            
             <div class="section-header">
                 <h3>Adicionar Processo</h3>
             </div>
             
             <form id="addItemProcessoForm">
                 <input type="hidden" id="currentItemId">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="processoSelect">Processo:</label>
-                        <select id="processoSelect" name="processo_id" required>
-                            <option value="">Selecione o processo</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="processoOrdem">Ordem:</label>
-                        <input type="number" id="processoOrdem" name="ordem" min="1" value="1" required>
-                    </div>
+                
+                <div class="form-group">
+                    <label for="processoSelect">Processo:</label>
+                    <select id="processoSelect" name="processo_id" required>
+                        <option value="">Selecione o processo</option>
+                    </select>
+                    <small class="field-hint">💡 A ordem será definida automaticamente pela sequência global dos processos</small>
                 </div>
+                
                 <div class="form-group">
                     <label for="processoObservacoes">Observações:</label>
-                    <textarea id="processoObservacoes" name="observacoes" rows="2"></textarea>
+                    <textarea id="processoObservacoes" name="observacoes" rows="2" placeholder="Observações específicas para este processo neste item"></textarea>
                 </div>
+                
                 <button type="submit" class="btn-save">Adicionar Processo</button>
             </form>
 
@@ -245,7 +249,7 @@
             <table class="tablePedidos" id="itemProcessosTable">
                 <thead>
                     <tr>
-                        <th>Ordem</th>
+                        <th>Ordem Global</th>
                         <th>Processo</th>
                         <th>Observações</th>
                         <th>Ações</th>
@@ -269,9 +273,15 @@
             <div class="tabs">
                 <button class="tab-button active" onclick="showTab('listar-processos')">Listar Processos</button>
                 <button class="tab-button" onclick="showTab('adicionar-processo')">Adicionar Processo</button>
+                <button class="tab-button" onclick="showTab('verificar-ordem')">Verificar Ordem</button>
             </div>
 
             <div id="listar-processos" class="tab-content active">
+                <div class="info-box reorganizacao-info">
+                    <h4>🔄 Reorganização Automática</h4>
+                    <p><strong>💡 Como funciona:</strong> Quando você escolhe uma ordem já ocupada por outro processo, todos os processos com ordem igual ou superior são automaticamente renumerados para manter a sequência correta.</p>
+                </div>
+
                 <table class="tablePedidos" id="processosTable">
                     <thead>
                         <tr>
@@ -290,15 +300,20 @@
             </div>
 
             <div id="adicionar-processo" class="tab-content">
+                <div class="info-box warning-info">
+                    <p><strong>💡 Dica:</strong> Se você escolher uma ordem já existente, os processos serão reorganizados automaticamente. Deixe em branco para adicionar no final da sequência.</p>
+                </div>
+
                 <form id="addProcessoForm">
                     <div class="form-row">
                         <div class="form-group">
                             <label for="processoNome">Nome do Processo:</label>
                             <input type="text" id="processoNome" name="nome" required>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group ordem-input-container">
                             <label for="processoOrdem">Ordem:</label>
                             <input type="number" id="processoOrdem" name="ordem" min="1" placeholder="Automático se vazio">
+                            <div id="ordemFeedback" class="ordem-feedback"></div>
                         </div>
                     </div>
                     <div class="form-group">
@@ -309,6 +324,30 @@
                         <button type="submit" class="btn-save">Adicionar Processo</button>
                     </div>
                 </form>
+            </div>
+
+            <div id="verificar-ordem" class="tab-content">
+                <div class="verification-container">
+                    <h3>🔍 Verificação da Ordem dos Processos</h3>
+                    
+                    <p>Esta ferramenta verifica se há problemas na numeração dos processos e oferece correção automática.</p>
+                    
+                    <div class="verification-buttons">
+                        <button class="btn-save" onclick="verificarOrdemProcessos()">🔍 Verificar Ordem dos Processos</button>
+                    </div>
+                    
+                    <div id="resultadoVerificacao" class="verification-result"></div>
+                    
+                    <div class="info-box verification-info">
+                        <h4>ℹ️ Sobre a Verificação</h4>
+                        <ul>
+                            <li><strong>Ordens Duplicadas:</strong> Quando dois ou mais processos têm a mesma ordem</li>
+                            <li><strong>Correção Automática:</strong> Renumera todos os processos em sequência (1, 2, 3...)</li>
+                            <li><strong>Preservação da Ordem:</strong> Mantém a ordem relativa baseada na ordem atual</li>
+                            <li><strong>Segurança:</strong> Operação reversível que não afeta dados dos pedidos</li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -321,6 +360,10 @@
                 <span class="close" onclick="closeEditProcessoModal()">&times;</span>
             </div>
             
+            <div class="info-box reorganizacao-edit-info">
+                <p><strong>🔄 Reorganização:</strong> Se você alterar a ordem para um número já ocupado, os processos intermediários serão reorganizados automaticamente.</p>
+            </div>
+            
             <form id="editProcessoForm">
                 <input type="hidden" id="editProcessoId">
                 <div class="form-row">
@@ -328,9 +371,10 @@
                         <label for="editProcessoNome">Nome do Processo:</label>
                         <input type="text" id="editProcessoNome" name="nome" required>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group ordem-input-container">
                         <label for="editProcessoOrdem">Ordem:</label>
                         <input type="number" id="editProcessoOrdem" name="ordem" min="1" required>
+                        <div id="editOrdemFeedback" class="ordem-feedback"></div>
                     </div>
                 </div>
                 <div class="form-group">
