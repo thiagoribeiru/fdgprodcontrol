@@ -1,0 +1,243 @@
+# Sistema de Controle de Produção - .gitignore
+
+# ======================
+# ARQUIVOS DE INSTALAÇÃO
+# ======================
+.installed
+
+# ======================
+# CONFIGURAÇÕES SENSÍVEIS
+# ======================
+# Arquivo principal de configuração com credenciais do banco
+config.php
+
+# ======================
+# LOGS E DADOS TEMPORÁRIOS
+# ======================
+# Diretório de logs
+logs/
+*.log
+
+# Logs específicos
+api_errors.log
+sistema.log
+error.log
+access.log
+
+# ======================
+# BACKUPS E DADOS
+# ======================
+# Diretório de backups
+backups/
+*.sql
+*.sql.gz
+*.sql.zip
+bkp*
+
+# Dumps de banco de dados
+dump.sql
+backup_*.sql
+*.dump
+*.sql
+
+# ======================
+# UPLOADS E CACHE
+# ======================
+# Diretório de uploads
+uploads/
+upload/
+files/
+
+# Cache de sistema
+cache/
+tmp/
+temp/
+
+# Thumbnails e imagens processadas
+thumbs/
+resized/
+
+# ======================
+# ARQUIVOS DE SISTEMA
+# ======================
+# Modo de manutenção
+.maintenance
+
+# Lock files
+*.lock
+
+# PID files
+*.pid
+
+# ======================
+# FERRAMENTAS DE DESENVOLVIMENTO
+# ======================
+# Composer
+/vendor/
+composer.lock
+composer.phar
+
+# Node.js
+node_modules/
+npm-debug.log
+yarn-error.log
+package-lock.json
+
+# Ferramentas de build
+/build/
+/dist/
+
+# ======================
+# IDEs E EDITORES
+# ======================
+# PhpStorm
+.idea/
+*.iml
+*.iws
+
+# Visual Studio Code
+.vscode/
+.history/
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+*.swp
+*.swo
+*~
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# ======================
+# SISTEMAS OPERACIONAIS
+# ======================
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msm
+*.msp
+*.lnk
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# ======================
+# SERVIDORES WEB
+# ======================
+# Apache
+.htaccess.backup
+.htaccess.bak
+
+# Nginx
+nginx.conf.backup
+
+# ======================
+# DADOS DE TESTE
+# ======================
+# Dados de teste e desenvolvimento
+test_data/
+sample_data/
+fixtures/
+
+# Screenshots e documentação temporária
+screenshots/
+docs/temp/
+
+# ======================
+# ARQUIVOS ESPECÍFICOS DO PROJETO
+# ======================
+# Dados de produção que não devem ir para o repositório
+production_data.sql
+real_customers.csv
+
+# Chaves e certificados
+*.key
+*.pem
+*.crt
+*.p12
+
+# Arquivos de configuração específicos do servidor
+server_config.php
+local_settings.php
+
+# ======================
+# ARQUIVOS DIVERSOS
+# ======================
+# Arquivos compactados
+*.zip
+*.tar
+*.tar.gz
+*.rar
+*.7z
+
+# Arquivos temporários do sistema
+*.tmp
+*.temp
+*.bak
+*.backup
+*.old
+
+# Arquivos de patch
+*.patch
+*.diff
+
+# ======================
+# FERRAMENTAS DE QUALIDADE
+# ======================
+# PHPUnit
+/phpunit.xml
+/.phpunit.result.cache
+
+# PHP CS Fixer
+.php_cs.cache
+.php-cs-fixer.cache
+
+# Psalm
+psalm.xml
+
+# ======================
+# DOCUMENTAÇÃO GERADA
+# ======================
+# PHPDoc
+/docs/api/
+phpdoc.xml
+
+# ======================
+# IGNORAR TEMPORARIAMENTE
+# ======================
+# Descomente estas linhas se quiser versionar os arquivos
+# !config.php.example
+# !logs/.gitkeep
+# !uploads/.gitkeep

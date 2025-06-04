@@ -1,5 +1,8 @@
 <?php
-// api.php - API Final Corrigida para Sistema de Controle de Produção
+// api.php - API Refatorada para Sistema de Controle de Produção
+
+// Incluir configurações centralizadas
+require_once 'config.php';
 
 // Configurar headers
 header('Content-Type: application/json; charset=utf-8');
@@ -18,13 +21,6 @@ error_reporting(E_ALL);
 ini_set('display_errors', 0);
 ini_set('log_errors', 1);
 
-// Função para resposta JSON
-function jsonResponse($data, $status = 200) {
-    http_response_code($status);
-    echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
-    exit();
-}
-
 // Função para log de erros
 function logError($message) {
     $logFile = __DIR__ . '/api_errors.log';
@@ -32,39 +28,11 @@ function logError($message) {
     file_put_contents($logFile, $timestamp . $message . PHP_EOL, FILE_APPEND | LOCK_EX);
 }
 
-// Função para validar campos obrigatórios
-function validateRequired($data, $fields) {
-    foreach ($fields as $field) {
-        if (!isset($data[$field]) || empty(trim($data[$field]))) {
-            return "O campo '$field' é obrigatório.";
-        }
-    }
-    return null;
-}
-
 // Try-catch global
 try {
-    // Configuração do banco
-    $config = [
-        'host' => 'localhost',
-        'port' => '3306',
-        'dbname' => 'controle_producao',
-        'username' => 'root',
-        'password' => ''
-    ];
-
-    // Conectar ao banco
-    try {
-        $dsn = "mysql:host={$config['host']};port={$config['port']};dbname={$config['dbname']};charset=utf8mb4";
-        $pdo = new PDO($dsn, $config['username'], $config['password']);
-        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-    } catch(PDOException $e) {
-        logError("Conexão falhou: " . $e->getMessage());
-        jsonResponse([
-            'error' => 'Erro de conexão com banco de dados',
-            'details' => $e->getMessage()
-        ], 500);
+    // Usar conexão do config.php (variável $pdo já está disponível)
+    if (!isset($pdo) || !$pdo) {
+        throw new Exception('Conexão com banco de dados não está disponível');
     }
 
     // Obter ação
@@ -110,18 +78,17 @@ try {
             break;
             
         case 'add_processo':
-            addProcesso($pdo); // FUNÇÃO ATUALIZADA COM REORGANIZAÇÃO
+            addProcesso($pdo);
             break;
             
         case 'update_processo':
-            updateProcesso($pdo); // FUNÇÃO ATUALIZADA COM REORGANIZAÇÃO
+            updateProcesso($pdo);
             break;
             
         case 'delete_processo':
             deleteProcesso($pdo);
             break;
             
-        // NOVOS ENDPOINTS PARA REORGANIZAÇÃO
         case 'get_processos_ordem':
             getProcessosOrdem($pdo);
             break;
@@ -335,10 +302,10 @@ function deletePedido($pdo) {
         
         $pdo->beginTransaction();
         
-        // Remover processos dos itens
+        // Remover processos dos itens (compatível com MySQL antigo)
         $stmt = $pdo->prepare("
             DELETE pip FROM pedido_item_processos pip
-            JOIN pedido_itens pi ON pip.pedido_item_id = pi.id
+            INNER JOIN pedido_itens pi ON pip.pedido_item_id = pi.id
             WHERE pi.pedido_id = ?
         ");
         $stmt->execute([$pedido_id]);
@@ -425,7 +392,7 @@ function deleteItem($pdo) {
             SELECT COUNT(*) as total, 
                    GROUP_CONCAT(DISTINCT p.codigo_pedido SEPARATOR ', ') as pedidos_afetados
             FROM pedido_itens pi
-            JOIN pedidos p ON pi.pedido_id = p.id
+            INNER JOIN pedidos p ON pi.pedido_id = p.id
             WHERE pi.item_id = ?
         ");
         $stmt->execute([$item_id]);
@@ -494,7 +461,6 @@ function getProcessos($pdo) {
     }
 }
 
-// Função atualizada para adicionar processo com reorganização automática
 function addProcesso($pdo) {
     try {
         $input = file_get_contents('php://input');
@@ -585,7 +551,6 @@ function addProcesso($pdo) {
     }
 }
 
-// Função atualizada para editar processo com reorganização automática
 function updateProcesso($pdo) {
     try {
         $processo_id = $_GET['id'] ?? 0;
@@ -708,7 +673,6 @@ function updateProcesso($pdo) {
     }
 }
 
-// Nova função para visualizar ordem dos processos (útil para debug)
 function getProcessosOrdem($pdo) {
     try {
         $stmt = $pdo->query("
@@ -750,7 +714,6 @@ function getProcessosOrdem($pdo) {
     }
 }
 
-// Nova função para corrigir numeração (caso seja necessário)
 function corrigirOrdemProcessos($pdo) {
     try {
         $pdo->beginTransaction();
@@ -805,7 +768,7 @@ function deleteProcesso($pdo) {
             SELECT COUNT(*) as total, 
                    GROUP_CONCAT(DISTINCT i.nome SEPARATOR ', ') as itens_afetados
             FROM item_processos ip
-            JOIN itens i ON ip.item_id = i.id
+            INNER JOIN itens i ON ip.item_id = i.id
             WHERE ip.processo_id = ?
         ");
         $stmt->execute([$processo_id]);
@@ -869,7 +832,7 @@ function getItemProcessos($pdo) {
             jsonResponse(['error' => 'ID do item é obrigatório'], 400);
         }
         
-        // ATUALIZADO: Ordenar pela ordem global dos processos
+        // Ordenar pela ordem global dos processos
         $stmt = $pdo->prepare("
             SELECT 
                 ip.id,
@@ -880,7 +843,7 @@ function getItemProcessos($pdo) {
                 p.descricao as processo_descricao,
                 p.ordem as ordem_global
             FROM item_processos ip
-            JOIN processos p ON ip.processo_id = p.id
+            INNER JOIN processos p ON ip.processo_id = p.id
             WHERE ip.item_id = ?
             ORDER BY p.ordem ASC, p.nome ASC
         ");
@@ -905,7 +868,6 @@ function addItemProcesso($pdo) {
             jsonResponse(['error' => 'JSON inválido'], 400);
         }
         
-        // REMOVIDO: validação de 'ordem' - agora só precisa de item_id e processo_id
         $error = validateRequired($data, ['item_id', 'processo_id']);
         if ($error) {
             jsonResponse(['error' => $error], 400);
@@ -924,7 +886,7 @@ function addItemProcesso($pdo) {
             jsonResponse(['error' => 'Este processo já foi adicionado ao item'], 400);
         }
         
-        // SIMPLIFICADO: Inserir sem ordem específica
+        // Inserir sem ordem específica
         $stmt = $pdo->prepare("
             INSERT INTO item_processos (item_id, processo_id, observacoes) 
             VALUES (?, ?, ?)
@@ -978,7 +940,7 @@ function getPedidoItens($pdo) {
         $stmt = $pdo->prepare("
             SELECT pi.*, i.nome as item_nome, i.descricao as item_descricao
             FROM pedido_itens pi
-            JOIN itens i ON pi.item_id = i.id
+            INNER JOIN itens i ON pi.item_id = i.id
             WHERE pi.pedido_id = ?
             ORDER BY i.nome
         ");
@@ -1010,7 +972,7 @@ function getPedidoDetalhado($pdo) {
             jsonResponse(['error' => 'Pedido não encontrado'], 404);
         }
         
-        // ATUALIZADO: Buscar processos ordenados APENAS pela ordem global
+        // Buscar processos ordenados APENAS pela ordem global
         $stmt = $pdo->prepare("
             SELECT 
                 pi.id as pedido_item_id,
@@ -1026,9 +988,9 @@ function getPedidoDetalhado($pdo) {
                 pip.usuario_responsavel,
                 CONCAT(i.nome, ' - ', proc.nome) as processo_completo
             FROM pedido_itens pi
-            JOIN itens i ON pi.item_id = i.id
-            JOIN item_processos ip ON i.id = ip.item_id
-            JOIN processos proc ON ip.processo_id = proc.id
+            INNER JOIN itens i ON pi.item_id = i.id
+            INNER JOIN item_processos ip ON i.id = ip.item_id
+            INNER JOIN processos proc ON ip.processo_id = proc.id
             LEFT JOIN pedido_item_processos pip ON pi.id = pip.pedido_item_id AND proc.id = pip.processo_id
             WHERE pi.pedido_id = ?
             ORDER BY proc.ordem ASC, i.nome ASC
@@ -1037,7 +999,6 @@ function getPedidoDetalhado($pdo) {
         $stmt->execute([$pedido_id]);
         $todos_processos = $stmt->fetchAll();
         
-        // Resto da função permanece igual...
         $total_processos = count($todos_processos);
         $peso_completos = 0;
         
@@ -1129,11 +1090,8 @@ function updateProcessoStatus($pdo) {
         } else {
             // Criar novo registro
             $stmt = $pdo->prepare("
-                INSERT INTO pedido_item_processos (pedido_item_id, processo_id, ordem, status, data_inicio, data_conclusao, observacoes, usuario_responsavel)
-                SELECT ?, ?, ip.ordem, ?, ?, ?, ?, ?
-                FROM item_processos ip
-                JOIN pedido_itens pi ON ip.item_id = pi.item_id
-                WHERE pi.id = ? AND ip.processo_id = ?
+                INSERT INTO pedido_item_processos (pedido_item_id, processo_id, status, data_inicio, data_conclusao, observacoes, usuario_responsavel)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
             ");
             
             $stmt->execute([
@@ -1143,9 +1101,7 @@ function updateProcessoStatus($pdo) {
                 $dataInicio,
                 $dataConclusao,
                 $data['observacoes'] ?? '',
-                $data['usuario_responsavel'] ?? '',
-                $data['pedido_item_id'],
-                $data['processo_id']
+                $data['usuario_responsavel'] ?? ''
             ]);
         }
         
@@ -1184,10 +1140,10 @@ function getAcompanhamentoPedido($pdo) {
                 pip.observacoes as processo_observacoes,
                 pip.usuario_responsavel
             FROM pedidos p
-            JOIN pedido_itens pi ON p.id = pi.pedido_id
-            JOIN itens i ON pi.item_id = i.id
-            JOIN item_processos ip ON i.id = ip.item_id
-            JOIN processos proc ON ip.processo_id = proc.id
+            INNER JOIN pedido_itens pi ON p.id = pi.pedido_id
+            INNER JOIN itens i ON pi.item_id = i.id
+            INNER JOIN item_processos ip ON i.id = ip.item_id
+            INNER JOIN processos proc ON ip.processo_id = proc.id
             LEFT JOIN pedido_item_processos pip ON pi.id = pip.pedido_item_id AND proc.id = pip.processo_id
             WHERE p.id = ?
             ORDER BY proc.ordem, i.nome
@@ -1247,10 +1203,10 @@ function addItemToPedido($pdo) {
         
         $pedido_item_id = $pdo->lastInsertId();
         
-        // Criar processos para este item
+        // Criar processos para este item (inicialmente com status 'aguardando')
         $stmt = $pdo->prepare("
-            INSERT INTO pedido_item_processos (pedido_item_id, processo_id, ordem, status)
-            SELECT ?, ip.processo_id, ip.ordem, 'aguardando'
+            INSERT INTO pedido_item_processos (pedido_item_id, processo_id, status)
+            SELECT ?, ip.processo_id, 'aguardando'
             FROM item_processos ip
             WHERE ip.item_id = ?
         ");
