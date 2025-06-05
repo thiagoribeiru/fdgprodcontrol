@@ -1,20 +1,26 @@
-# Sistema de Controle de Produção v5.0
+# Sistema de Controle de Produção v5.1
 
 ## 🏭 Sobre o Sistema
 
 Sistema para controle e acompanhamento de processos produtivos, desenvolvido em PHP/MySQL com interface moderna e responsiva. 
 
-**Versão 5.0** - Completamente refatorada para eliminar redundâncias e simplificar a manutenção.
+**Versão 5.1** - Correção crítica do instalador e melhorias de compatibilidade.
 
-## ⚡ Principais Melhorias v5.0
+## ⚡ Principais Melhorias v5.1
 
-### 🔧 **Refatoração Completa**
+### 🐛 **Correções Críticas**
+- ✅ **Corrigido erro de sintaxe** no `setup.php` que impedia a instalação
+- ✅ **Removidas linhas duplicadas** que causavam parse error
+- ✅ **Melhorada compatibilidade** com diferentes versões do PHP
+- ✅ **Versão atualizada** em todos os arquivos relevantes
+
+### 🔧 **Melhorias Herdadas da v5.0**
 - ✅ **Eliminada redundância** entre `config.php` e `api.php`
 - ✅ **Conexão PDO centralizada** - uma única instância para todo o sistema
 - ✅ **Configuração simplificada** - sem complexidade de ambientes
 - ✅ **Compatibilidade MySQL 5.0+** - funciona com versões antigas
 
-### ✨ **Novas Funcionalidades**
+### ✨ **Funcionalidades Principais**
 - ✅ **Instalador automático** (`setup.php`) com interface web
 - ✅ **Verificação de requisitos** do sistema durante instalação
 - ✅ **Sistema de logs organizado** em arquivos separados
@@ -55,14 +61,35 @@ $config_database = [
 
 ```
 sistema-controle-producao/
-├── index.html      # Página inicial
-├── adm.html        # Administração
-├── config.php      # Configurações centralizadas
-├── api.php         # API refatorada
-├── setup.php       # Instalador (remover após uso)
-├── script.js       # JavaScript
-├── style.css       # Estilos
-└── logs/           # Logs automáticos
+├── config/
+│   ├── database.php
+│   └── system.php
+├── controllers/
+│   └── ApiController.php
+├── js/
+│   └── modules/
+│       ├── api.js
+│       ├── data.js
+│       └── ui.js
+├── logs/
+├── models/
+│   ├── Item.php
+│   ├── Pedido.php
+│   ├── Processo.php
+│   └── ProcessoStatus.php
+├── uploads/
+├── utils/
+│   └── helpers.php
+├── .gitignore
+├── .installed
+├── adm.html
+├── api.php
+├── config.php
+├── index.html
+├── README.md
+├── script.js
+├── setup.php
+└── style.css
 ```
 
 ## 🎯 Funcionalidades Principais
@@ -125,6 +152,9 @@ getSystemStats();         // Estatísticas básicas
 
 ## 🔍 Solução de Problemas
 
+**Parse Error no setup.php (v5.0):**
+- ✅ **Corrigido na v5.1** - atualizar para versão mais recente
+
 **Erro de conexão:**
 - Verifique credenciais no `config.php`
 - Confirme se MySQL está rodando
@@ -159,6 +189,24 @@ getSystemStats();         // Estatísticas básicas
 - ✅ **MySQL**: 5.0, 5.1, 5.5, 5.6, 5.7, 8.0+
 - ✅ **MariaDB**: 10.0+
 
+## 📝 Changelog v5.1
+
+### 🐛 **Corrigido**
+- Parse error crítico no `setup.php` linha 536
+- Linhas duplicadas que causavam conflito de sintaxe
+- Encoding de caracteres em alguns comentários
+- Compatibilidade com interpretadores PHP mais restritivos
+
+### 🔧 **Modificado**
+- Versão atualizada para 5.1 em todos os arquivos
+- Mensagens do instalador atualizadas
+- Documentação corrigida e atualizada
+
+### ✨ **Melhorado**
+- Estabilidade do processo de instalação
+- Mensagens de erro mais claras no instalador
+- Compatibilidade com mais ambientes de hospedagem
+
 ## 📝 Changelog v5.0
 
 ### ✨ **Adicionado**
@@ -181,5 +229,5 @@ getSystemStats();         // Estatísticas básicas
 
 ---
 
-**Sistema de Controle de Produção v5.0**  
-*Simples, eficiente e compatível*
+**Sistema de Controle de Produção v5.1**  
+*Simples, eficiente e estável*

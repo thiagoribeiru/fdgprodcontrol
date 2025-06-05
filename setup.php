@@ -468,99 +468,7 @@ function createFullConfigFile($config) {
     $lines[] = '// config.php - Configurações do Sistema (Gerado automaticamente)';
     $lines[] = '';
     $lines[] = '// Versão do sistema';
-    $lines[] = "define('SISTEMA_VERSAO', '5.0');";
-    $lines[] = "define('SISTEMA_NOME', 'Sistema de Controle de Produção');";
-    $lines[] = '';
-    $lines[] = '// Configurações do banco de dados';
-    $lines[] = '$config_database = [';
-    $lines[] = "    'host' => '" . addslashes($config['db_host']) . "',";
-    $lines[] = "    'port' => '" . addslashes($config['db_port']) . "',";
-    $lines[] = "    'dbname' => '" . addslashes($config['db_name']) . "',";
-    $lines[] = "    'username' => '" . addslashes($config['db_user']) . "',";
-    $lines[] = "    'password' => '" . addslashes($config['db_pass']) . "',";
-    $lines[] = "    'charset' => 'utf8mb4',";
-    $lines[] = "    'options' => [";
-    $lines[] = "        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,";
-    $lines[] = "        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,";
-    $lines[] = "        PDO::ATTR_EMULATE_PREPARES => false,";
-    $lines[] = '        PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci"';
-    $lines[] = "    ]";
-    $lines[] = '];';
-    $lines[] = '';
-    $lines[] = '// Configurações de timezone';
-    $lines[] = "define('TIMEZONE', 'America/Sao_Paulo');";
-    $lines[] = 'date_default_timezone_set(TIMEZONE);';
-    $lines[] = '';
-    $lines[] = '// Configurações de log';
-    $lines[] = "define('LOG_ERRORS', true);";
-    $lines[] = "define('LOG_PATH', __DIR__ . '/logs/');";
-    $lines[] = '';
-    $lines[] = '// Criar diretório de logs se não existir';
-    $lines[] = 'if (!is_dir(LOG_PATH)) {';
-    $lines[] = '    mkdir(LOG_PATH, 0755, true);';
-    $lines[] = '}';
-    $lines[] = '';
-    $lines[] = '// Variável global para conexão PDO';
-    $lines[] = '$pdo = null;';
-    $lines[] = '';
-    $lines[] = 'try {';
-    $lines[] = '    $dsn = "mysql:host={$config_database[\'host\']};port={$config_database[\'port\']};dbname={$config_database[\'dbname\']};charset={$config_database[\'charset\']}";';
-    $lines[] = '    $pdo = new PDO($dsn, $config_database[\'username\'], $config_database[\'password\'], $config_database[\'options\']);';
-    $lines[] = '} catch(PDOException $e) {';
-    $lines[] = '    die("Erro na conexão com o banco de dados: " . $e->getMessage());';
-    $lines[] = '}';
-    $lines[] = '';
-    $lines[] = '// Função para retornar dados em JSON';
-    $lines[] = 'function jsonResponse($data, $status_code = 200) {';
-    $lines[] = '    http_response_code($status_code);';
-    $lines[] = '    header(\'Content-Type: application/json; charset=utf-8\');';
-    $lines[] = '    echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);';
-    $lines[] = '    exit;';
-    $lines[] = '}';
-    $lines[] = '';
-    $lines[] = '// Função para validar campos obrigatórios';
-    $lines[] = 'function validateRequired($data, $fields) {';
-    $lines[] = '    foreach ($fields as $field) {';
-    $lines[] = '        if (!isset($data[$field]) || empty(trim($data[$field]))) {';
-    $lines[] = '            return "O campo \'$field\' é obrigatório.";';
-    $lines[] = '        }';
-    $lines[] = '    }';
-    $lines[] = '    return null;';
-    $lines[] = '}';
-    $lines[] = '';
-    $lines[] = '?>';
-    
-    $config_content = implode("\n", $lines);
-    
-    file_put_contents(__DIR__ . '/config.php', $config_content);
-} = $new_db_config;
-                $new_lines[] = '';
-                $added = true;
-            }
-        }
-        
-        if (!$added) {
-            // Fallback: adicionar no final
-            $new_lines[] = '';
-            $new_lines[] = '// Configurações do banco de dados (atualizado pelo instalador)';
-            $new_lines[] = $new_db_config;
-        }
-        
-        file_put_contents($config_file, implode("\n", $new_lines));
-    }
-}
-
-/**
- * Cria um arquivo config.php completo (usado quando não existe um arquivo completo)
- */
-function createFullConfigFile($config) {
-    // Construir conteúdo linha por linha para evitar problemas com aspas
-    $lines = [];
-    $lines[] = '<?php';
-    $lines[] = '// config.php - Configurações do Sistema (Gerado automaticamente)';
-    $lines[] = '';
-    $lines[] = '// Versão do sistema';
-    $lines[] = "define('SISTEMA_VERSAO', '5.0');";
+    $lines[] = "define('SISTEMA_VERSAO', '5.1');";
     $lines[] = "define('SISTEMA_NOME', 'Sistema de Controle de Produção');";
     $lines[] = '';
     $lines[] = '// Configurações de ambiente';
@@ -670,7 +578,7 @@ function showSuccessPage() {
             <div class="info">
                 <strong>Informações da Instalação:</strong><br>
                 • Data/Hora: <?= date('d/m/Y H:i:s') ?><br>
-                • Versão: 5.0<br>
+                • Versão: 5.1<br>
                 • Banco: <?= $db_name ?><br>
                 • Dados de exemplo: <?= $sample_data ?><br>
                 • Config: <?= file_exists(__DIR__ . '/config.php') && (substr_count(file_get_contents(__DIR__ . '/config.php'), "\n") > 50) ? 'Atualizado (preservado)' : 'Criado novo' ?>
@@ -698,7 +606,7 @@ function showSuccessPage() {
             </div>
             
             <div style="text-align: center; margin-top: 30px; color: #666; font-size: 0.9em;">
-                Sistema de Controle de Produção v5.0<br>
+                Sistema de Controle de Produção v5.1<br>
                 Desenvolvido para otimizar seus processos produtivos
             </div>
         </div>
@@ -902,7 +810,7 @@ function showErrorPage($error_message) {
     <div class="container">
         <div class="header">
             <h1>🏭 Sistema de Controle de Produção</h1>
-            <p>Assistente de Instalação - Versão 5.0</p>
+            <p>Assistente de Instalação - Versão 5.1</p>
         </div>
         
         <div class="info-box">
@@ -998,8 +906,8 @@ function showErrorPage($error_message) {
         <?php endif; ?>
         
         <div style="text-align: center; margin-top: 30px; color: #666; font-size: 0.9em;">
-            Sistema de Controle de Produção v5.0<br>
-            Refatorado para eliminar redundâncias e melhorar performance
+            Sistema de Controle de Produção v5.1<br>
+            Refatorado e corrigido para máxima compatibilidade
         </div>
     </div>
 </body>
