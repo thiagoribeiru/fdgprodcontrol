@@ -1,0 +1,37 @@
+# api/.htaccess - Proteção do Diretório API
+# Sistema de Controle de Produção v5.2
+
+# Negar acesso direto a todos os arquivos do diretório api/
+<Files "*">
+    Order allow,deny
+    Deny from all
+</Files>
+
+# Permitir apenas acesso via include/require do PHP
+<FilesMatch "\.(php)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Bloquear listagem de diretório
+Options -Indexes
+
+# Configurações de segurança adicionais
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options nosniff
+    Header always set X-Frame-Options DENY
+    Header always set X-XSS-Protection "1; mode=block"
+</IfModule>
+
+# Configurações de cache para arquivos API (sem cache)
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType application/json "access plus 0 seconds"
+    ExpiresByType text/plain "access plus 0 seconds"
+</IfModule>
+
+# Log de tentativas de acesso direto
+<IfModule mod_log_config.c>
+    LogFormat "%h %l %u %t \"%r\" %>s %O \"%{Referer}i\" \"%{User-Agent}i\"" combined_api
+    CustomLog logs/api_access.log combined_api
+</IfModule>

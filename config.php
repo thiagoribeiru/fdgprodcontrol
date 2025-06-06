@@ -2,7 +2,7 @@
 // config.php - Configurações Centralizadas do Sistema de Controle de Produção
 
 // Versão do sistema
-define('SISTEMA_VERSAO', '5.0');
+define('SISTEMA_VERSAO', '5.2');
 define('SISTEMA_NOME', 'Sistema de Controle de Produção');
 
 // === CONFIGURAÇÕES DO BANCO DE DADOS ===
@@ -67,6 +67,11 @@ if (!is_dir(LOG_PATH)) {
 // Criar diretório de uploads se não existir
 if (!is_dir(UPLOAD_PATH)) {
     mkdir(UPLOAD_PATH, 0755, true);
+}
+
+// Criar diretório da API se não existir
+if (!is_dir(__DIR__ . '/api/')) {
+    mkdir(__DIR__ . '/api/', 0755, true);
 }
 
 // === CONEXÃO COM BANCO DE DADOS ===
@@ -272,6 +277,8 @@ function getSystemInfo() {
     $info = [
         'nome' => SISTEMA_NOME,
         'versao' => SISTEMA_VERSAO,
+        'arquitetura' => 'API Modularizada',
+        'modulos' => ['pedidos', 'itens', 'processos', 'receitas', 'acompanhamento'],
         'php_version' => phpversion(),
         'timezone' => TIMEZONE,
         'database_connected' => $pdo ? true : false,
@@ -368,7 +375,7 @@ function initializeSystem() {
         logMessage("Sistema iniciado com MySQL incompatível", 'WARNING');
     }
     
-    logMessage("Sistema inicializado com sucesso", 'INFO');
+    logMessage("Sistema inicializado com sucesso - API Modularizada", 'INFO');
 }
 
 /**
@@ -444,6 +451,14 @@ function getSystemStats() {
             ORDER BY total DESC
         ");
         $stats['status_pedidos'] = $stmt->fetchAll();
+        
+        // Informações da API
+        $stats['api_info'] = [
+            'version' => SISTEMA_VERSAO,
+            'architecture' => 'Modularizada',
+            'modules' => ['pedidos', 'itens', 'processos', 'receitas', 'acompanhamento'],
+            'total_endpoints' => 25
+        ];
         
         return $stats;
         
@@ -539,6 +554,6 @@ function createBackup() {
 checkMySQLCompatibility();
 
 // Log de inicialização
-logMessage("Sistema carregado - Versão " . SISTEMA_VERSAO, 'INFO');
+logMessage("Sistema carregado - Versão " . SISTEMA_VERSAO . " (API Modularizada)", 'INFO');
 
 ?>

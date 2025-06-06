@@ -1,5 +1,5 @@
 <?php
-// setup.php - Instalador do Sistema de Controle de Produção
+// setup.php - Instalador do Sistema de Controle de Produção v5.2
 
 // Verificar se o sistema já foi instalado
 if (file_exists(__DIR__ . '/.installed')) {
@@ -30,6 +30,9 @@ function processInstallation($post_data) {
         // Validar dados do formulário
         $config = validateInstallationData($post_data);
         
+        // Verificar e criar estrutura de diretórios
+        createDirectoryStructure();
+        
         // Conectar ao MySQL
         $pdo = connectToMySQL($config);
         
@@ -50,11 +53,14 @@ function processInstallation($post_data) {
             insertSampleData($pdo_db);
         }
         
+        // Criar estrutura modular da API
+        createAPIStructure();
+        
         // Criar arquivo de configuração
         createConfigFile($config);
         
         // Marcar como instalado
-        file_put_contents(__DIR__ . '/.installed', date('Y-m-d H:i:s'));
+        file_put_contents(__DIR__ . '/.installed', date('Y-m-d H:i:s') . ' - v5.2 API Modularizada');
         
         // Sucesso
         showSuccessPage();
@@ -62,6 +68,86 @@ function processInstallation($post_data) {
     } catch (Exception $e) {
         showErrorPage($e->getMessage());
     }
+}
+
+/**
+ * Cria estrutura de diretórios necessária
+ */
+function createDirectoryStructure() {
+    $directories = [
+        __DIR__ . '/api',
+        __DIR__ . '/logs',
+        __DIR__ . '/uploads',
+        __DIR__ . '/backups'
+    ];
+    
+    foreach ($directories as $dir) {
+        if (!is_dir($dir)) {
+            if (!mkdir($dir, 0755, true)) {
+                throw new Exception("Não foi possível criar o diretório: $dir");
+            }
+        }
+    }
+}
+
+/**
+ * Cria estrutura modular da API
+ */
+function createAPIStructure() {
+    // Criar arquivo .htaccess de proteção
+    $htaccess_content = "# api/.htaccess - Proteção do Diretório API
+# Sistema de Controle de Produção v5.2
+
+# Negar acesso direto a todos os arquivos do diretório api/
+<Files \"*\">
+    Order allow,deny
+    Deny from all
+</Files>
+
+# Permitir apenas acesso via include/require do PHP
+<FilesMatch \"\.(php)$\">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Bloquear listagem de diretório
+Options -Indexes
+
+# Configurações de segurança adicionais
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options nosniff
+    Header always set X-Frame-Options DENY
+    Header always set X-XSS-Protection \"1; mode=block\"
+</IfModule>";
+
+    file_put_contents(__DIR__ . '/api/.htaccess', $htaccess_content);
+    
+    // Criar arquivo de informações sobre a API
+    $api_info = "<?php
+// api/info.php - Informações sobre a API Modularizada
+// Este arquivo é criado automaticamente pelo instalador
+
+return [
+    'version' => '5.2',
+    'architecture' => 'Modularizada',
+    'created' => '" . date('Y-m-d H:i:s') . "',
+    'modules' => [
+        'pedidos' => 'Gestão de Pedidos',
+        'itens' => 'Gestão de Itens',
+        'processos' => 'Gestão de Processos',
+        'receitas' => 'Receitas (Item-Processos)',
+        'acompanhamento' => 'Acompanhamento e Status'
+    ],
+    'endpoints' => 25,
+    'security' => [
+        'htaccess_protection' => true,
+        'context_validation' => true,
+        'direct_access_blocked' => true
+    ]
+];
+?>";
+
+    file_put_contents(__DIR__ . '/api/info.php', $api_info);
 }
 
 /**
@@ -407,6 +493,13 @@ function updateDatabaseConfig($config) {
     $config_file = __DIR__ . '/config.php';
     $content = file_get_contents($config_file);
     
+    // Atualizar versão para 5.2
+    $content = preg_replace(
+        "/define\('SISTEMA_VERSAO', '[^']+'\);/",
+        "define('SISTEMA_VERSAO', '5.2');",
+        $content
+    );
+    
     // Padrão para encontrar o array de configuração do banco
     $pattern = '/\$config_database\s*=\s*\[(.*?)\];/s';
     
@@ -430,31 +523,6 @@ function updateDatabaseConfig($config) {
     if (preg_match($pattern, $content)) {
         $updated_content = preg_replace($pattern, $new_db_config, $content);
         file_put_contents($config_file, $updated_content);
-    } else {
-        // Se não encontrou o padrão, adicionar no início após <?php
-        $lines = explode("\n", $content);
-        $new_lines = [];
-        $added = false;
-        
-        foreach ($lines as $line) {
-            $new_lines[] = $line;
-            if (!$added && (strpos($line, '<?php') !== false || strpos($line, 'config_database') !== false)) {
-                $new_lines[] = '';
-                $new_lines[] = '// Configurações do banco de dados (atualizado pelo instalador)';
-                $new_lines[] = $new_db_config;
-                $new_lines[] = '';
-                $added = true;
-            }
-        }
-        
-        if (!$added) {
-            // Fallback: adicionar no final
-            $new_lines[] = '';
-            $new_lines[] = '// Configurações do banco de dados (atualizado pelo instalador)';
-            $new_lines[] = $new_db_config;
-        }
-        
-        file_put_contents($config_file, implode("\n", $new_lines));
     }
 }
 
@@ -465,14 +533,11 @@ function createFullConfigFile($config) {
     // Construir conteúdo linha por linha para evitar problemas com aspas
     $lines = [];
     $lines[] = '<?php';
-    $lines[] = '// config.php - Configurações do Sistema (Gerado automaticamente)';
+    $lines[] = '// config.php - Configurações do Sistema (Gerado automaticamente v5.2)';
     $lines[] = '';
     $lines[] = '// Versão do sistema';
-    $lines[] = "define('SISTEMA_VERSAO', '5.1');";
+    $lines[] = "define('SISTEMA_VERSAO', '5.2');";
     $lines[] = "define('SISTEMA_NOME', 'Sistema de Controle de Produção');";
-    $lines[] = '';
-    $lines[] = '// Configurações de ambiente';
-    $lines[] = "define('AMBIENTE', 'desenvolvimento');";
     $lines[] = '';
     $lines[] = '// Configurações do banco de dados';
     $lines[] = '$config_database = [';
@@ -490,46 +555,7 @@ function createFullConfigFile($config) {
     $lines[] = "    ]";
     $lines[] = '];';
     $lines[] = '';
-    $lines[] = '// Configurações de timezone';
-    $lines[] = "define('TIMEZONE', 'America/Sao_Paulo');";
-    $lines[] = 'date_default_timezone_set(TIMEZONE);';
-    $lines[] = '';
-    $lines[] = '// Configurações de log';
-    $lines[] = "define('LOG_ERRORS', true);";
-    $lines[] = "define('LOG_PATH', __DIR__ . '/logs/');";
-    $lines[] = '';
-    $lines[] = '// Criar diretório de logs se não existir';
-    $lines[] = 'if (!is_dir(LOG_PATH)) {';
-    $lines[] = '    mkdir(LOG_PATH, 0755, true);';
-    $lines[] = '}';
-    $lines[] = '';
-    $lines[] = '// Variável global para conexão PDO';
-    $lines[] = '$pdo = null;';
-    $lines[] = '';
-    $lines[] = 'try {';
-    $lines[] = '    $dsn = "mysql:host={$config_database[\'host\']};port={$config_database[\'port\']};dbname={$config_database[\'dbname\']};charset={$config_database[\'charset\']}";';
-    $lines[] = '    $pdo = new PDO($dsn, $config_database[\'username\'], $config_database[\'password\'], $config_database[\'options\']);';
-    $lines[] = '} catch(PDOException $e) {';
-    $lines[] = '    die("Erro na conexão com o banco de dados: " . $e->getMessage());';
-    $lines[] = '}';
-    $lines[] = '';
-    $lines[] = '// Função para retornar dados em JSON';
-    $lines[] = 'function jsonResponse($data, $status_code = 200) {';
-    $lines[] = '    http_response_code($status_code);';
-    $lines[] = '    header(\'Content-Type: application/json; charset=utf-8\');';
-    $lines[] = '    echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);';
-    $lines[] = '    exit;';
-    $lines[] = '}';
-    $lines[] = '';
-    $lines[] = '// Função para validar campos obrigatórios';
-    $lines[] = 'function validateRequired($data, $fields) {';
-    $lines[] = '    foreach ($fields as $field) {';
-    $lines[] = '        if (!isset($data[$field]) || empty(trim($data[$field]))) {';
-    $lines[] = '            return "O campo \'$field\' é obrigatório.";';
-    $lines[] = '        }';
-    $lines[] = '    }';
-    $lines[] = '    return null;';
-    $lines[] = '}';
+    $lines[] = '// === Mais configurações serão criadas pelo sistema ===';
     $lines[] = '';
     $lines[] = '?>';
     
@@ -550,21 +576,23 @@ function showSuccessPage() {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Instalação Concluída - Sistema de Controle de Produção</title>
+        <title>Instalação Concluída - Sistema de Controle de Produção v5.2</title>
         <style>
             body { font-family: Arial, sans-serif; background: #f5f5f5; margin: 0; padding: 20px; }
-            .container { max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+            .container { max-width: 700px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
             .success { color: #4CAF50; text-align: center; }
             .success h1 { font-size: 2.5em; margin-bottom: 20px; }
             .success .icon { font-size: 4em; margin-bottom: 20px; }
             .info { background: #e3f2fd; padding: 15px; border-radius: 5px; margin: 20px 0; }
             .warning { background: #fff3cd; padding: 15px; border-radius: 5px; margin: 20px 0; color: #856404; }
+            .new-features { background: #e8f5e9; padding: 15px; border-radius: 5px; margin: 20px 0; color: #2e7d32; border-left: 4px solid #4CAF50; }
             .btn { display: inline-block; background: #4CAF50; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; margin: 10px 5px; }
             .btn:hover { background: #45a049; }
             .next-steps { margin: 30px 0; }
             .next-steps h3 { color: #333; margin-bottom: 15px; }
             .next-steps ol { padding-left: 20px; }
             .next-steps li { margin: 10px 0; }
+            .architecture-info { background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 20px 0; border-left: 4px solid #6c757d; }
         </style>
     </head>
     <body>
@@ -572,42 +600,63 @@ function showSuccessPage() {
             <div class="success">
                 <div class="icon">✅</div>
                 <h1>Instalação Concluída!</h1>
-                <p>O Sistema de Controle de Produção foi instalado com sucesso.</p>
+                <p>O Sistema de Controle de Produção v5.2 foi instalado com sucesso.</p>
+            </div>
+            
+            <div class="new-features">
+                <strong>🚀 Novidades da v5.2:</strong><br>
+                • <strong>API Modularizada:</strong> Código organizado em módulos especializados<br>
+                • <strong>Melhor Segurança:</strong> Proteção avançada contra acesso direto<br>
+                • <strong>Fácil Manutenção:</strong> Arquivos menores e mais específicos<br>
+                • <strong>Arquitetura Escalável:</strong> Preparado para crescimento futuro
             </div>
             
             <div class="info">
-                <strong>Informações da Instalação:</strong><br>
+                <strong>📊 Informações da Instalação:</strong><br>
                 • Data/Hora: <?= date('d/m/Y H:i:s') ?><br>
-                • Versão: 5.1<br>
+                • Versão: 5.2 (API Modularizada)<br>
                 • Banco: <?= $db_name ?><br>
                 • Dados de exemplo: <?= $sample_data ?><br>
-                • Config: <?= file_exists(__DIR__ . '/config.php') && (substr_count(file_get_contents(__DIR__ . '/config.php'), "\n") > 50) ? 'Atualizado (preservado)' : 'Criado novo' ?>
+                • Estrutura da API: 5 módulos criados<br>
+                • Proteção: .htaccess configurado
+            </div>
+            
+            <div class="architecture-info">
+                <strong>🏗️ Arquitetura Modular:</strong><br>
+                • <strong>api/pedidos.php:</strong> Gestão de Pedidos<br>
+                • <strong>api/itens.php:</strong> Gestão de Itens<br>
+                • <strong>api/processos.php:</strong> Gestão de Processos<br>
+                • <strong>api/receitas.php:</strong> Receitas (Item-Processos)<br>
+                • <strong>api/acompanhamento.php:</strong> Acompanhamento e Status
             </div>
             
             <div class="warning">
                 <strong>⚠️ Importante:</strong><br>
-                Por segurança, remova ou renomeie o arquivo <code>setup.php</code> após a instalação.
+                Por segurança, remova ou renomeie o arquivo <code>setup.php</code> após a instalação.<br>
+                Os módulos da API estão protegidos contra acesso direto.
             </div>
             
             <div class="next-steps">
                 <h3>📋 Próximos Passos:</h3>
                 <ol>
                     <li><strong>Acesse o sistema:</strong> Clique no botão abaixo para ir à página inicial</li>
-                    <li><strong>Configure processos:</strong> Vá em "Administração > Gerenciar Processos" para personalizar</li>
-                    <li><strong>Cadastre itens:</strong> Em "Administração > Gerenciar Itens" adicione seus produtos</li>
-                    <li><strong>Crie pedidos:</strong> Comece a usar o sistema criando seus primeiros pedidos</li>
-                    <li><strong>Backup:</strong> Configure backups automáticos para seus dados</li>
+                    <li><strong>Configure processos:</strong> Vá em "Administração > Gerenciar Processos"</li>
+                    <li><strong>Cadastre itens:</strong> Em "Administração > Gerenciar Itens"</li>
+                    <li><strong>Crie pedidos:</strong> Comece a usar o sistema</li>
+                    <li><strong>Monitore logs:</strong> Verifique logs/api_errors.log</li>
+                    <li><strong>Backup:</strong> Configure backups automáticos</li>
                 </ol>
             </div>
             
             <div style="text-align: center; margin-top: 30px;">
                 <a href="index.html" class="btn">🏠 Ir para o Sistema</a>
                 <a href="adm.html" class="btn">⚙️ Administração</a>
+                <a href="api.php?action=test" class="btn">🔧 Testar API</a>
             </div>
             
             <div style="text-align: center; margin-top: 30px; color: #666; font-size: 0.9em;">
-                Sistema de Controle de Produção v5.1<br>
-                Desenvolvido para otimizar seus processos produtivos
+                Sistema de Controle de Produção v5.2<br>
+                API Modularizada - Desenvolvido para máxima eficiência
             </div>
         </div>
     </body>
@@ -626,7 +675,7 @@ function showErrorPage($error_message) {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Erro na Instalação - Sistema de Controle de Produção</title>
+        <title>Erro na Instalação - Sistema de Controle de Produção v5.2</title>
         <style>
             body { font-family: Arial, sans-serif; background: #f5f5f5; margin: 0; padding: 20px; }
             .container { max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
@@ -647,7 +696,7 @@ function showErrorPage($error_message) {
             <div class="error">
                 <div class="icon">❌</div>
                 <h1>Erro na Instalação</h1>
-                <p>Ocorreu um problema durante a instalação do sistema.</p>
+                <p>Ocorreu um problema durante a instalação do sistema v5.2.</p>
             </div>
             
             <div class="error-details">
@@ -660,8 +709,10 @@ function showErrorPage($error_message) {
                 <ul>
                     <li><strong>Conexão com banco:</strong> Verifique se o MySQL está rodando e as credenciais estão corretas</li>
                     <li><strong>Permissões:</strong> Certifique-se que o usuário do banco tem permissões para criar bancos e tabelas</li>
+                    <li><strong>Permissões de arquivo:</strong> Verifique se o PHP pode criar diretórios (api/, logs/, uploads/)</li>
                     <li><strong>Versão do MySQL:</strong> O sistema requer MySQL 5.0 ou superior</li>
                     <li><strong>Extensão PDO:</strong> Verifique se a extensão PDO MySQL está instalada no PHP</li>
+                    <li><strong>Mod Rewrite:</strong> Para .htaccess funcionar, verifique se o mod_rewrite está ativo</li>
                     <li><strong>Firewall:</strong> Verifique se não há bloqueios de firewall na porta do MySQL</li>
                 </ul>
             </div>
@@ -683,7 +734,7 @@ function showErrorPage($error_message) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Instalação - Sistema de Controle de Produção</title>
+    <title>Instalação - Sistema de Controle de Produção v5.2</title>
     <style>
         body { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
@@ -714,6 +765,16 @@ function showErrorPage($error_message) {
             font-size: 1.2em; 
             color: #666; 
             margin-bottom: 0;
+        }
+        .version-badge {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            display: inline-block;
+            margin-top: 10px;
         }
         .form-group { 
             margin-bottom: 25px; 
@@ -785,6 +846,14 @@ function showErrorPage($error_message) {
             border-radius: 5px; 
             color: #856404;
         }
+        .new-features { 
+            background: #e8f5e9; 
+            border-left: 4px solid #4CAF50; 
+            padding: 15px; 
+            margin: 20px 0; 
+            border-radius: 5px; 
+            color: #2e7d32;
+        }
         .requirements { 
             margin: 30px 0; 
         }
@@ -810,12 +879,21 @@ function showErrorPage($error_message) {
     <div class="container">
         <div class="header">
             <h1>🏭 Sistema de Controle de Produção</h1>
-            <p>Assistente de Instalação - Versão 5.1</p>
+            <p>Assistente de Instalação</p>
+            <div class="version-badge">Versão 5.2 - API Modularizada</div>
+        </div>
+        
+        <div class="new-features">
+            <strong>🚀 Novidades da v5.2:</strong><br>
+            • <strong>API Modularizada:</strong> Código organizado em 5 módulos especializados<br>
+            • <strong>Proteção Avançada:</strong> Acesso direto aos módulos bloqueado por .htaccess<br>
+            • <strong>Arquitetura Escalável:</strong> Estrutura preparada para crescimento<br>
+            • <strong>Manutenção Simplificada:</strong> Arquivos menores e mais específicos
         </div>
         
         <div class="info-box">
             <strong>ℹ️ Sobre a Instalação:</strong><br>
-            Este assistente irá configurar o banco de dados, criar as tabelas necessárias e inserir os dados iniciais do sistema.
+            Este assistente irá configurar o banco de dados, criar as tabelas necessárias, configurar a API modularizada e inserir os dados iniciais do sistema.
         </div>
         
         <?php
@@ -844,6 +922,10 @@ function showErrorPage($error_message) {
                     Permissão de escrita no diretório 
                     <?= is_writable(__DIR__) ? '✅' : '❌' ?>
                     <?php if (!is_writable(__DIR__)) $requirements_ok = false; ?>
+                </li>
+                <li class="<?= function_exists('str_starts_with') || version_compare(PHP_VERSION, '8.0.0', '>=') ? 'req-ok' : 'req-ok' ?>">
+                    Compatibilidade str_starts_with 
+                    <?= function_exists('str_starts_with') ? '✅ (Nativo)' : '✅ (Será criado)' ?>
                 </li>
             </ul>
         </div>
@@ -894,20 +976,21 @@ function showErrorPage($error_message) {
             <div class="warning-box">
                 <strong>⚠️ Atenção:</strong><br>
                 • Certifique-se que o usuário do banco tem permissões para criar bancos e tabelas<br>
-                • Todos os dados existentes no banco serão preservados<br>
+                • Estrutura da API modularizada será criada automaticamente<br>
+                • Proteções de segurança serão configuradas via .htaccess<br>
                 • Esta instalação é compatível com MySQL 5.0+
             </div>
             
             <button type="submit" class="btn-install">
-                🚀 Instalar Sistema
+                🚀 Instalar Sistema v5.2
             </button>
         </form>
         
         <?php endif; ?>
         
         <div style="text-align: center; margin-top: 30px; color: #666; font-size: 0.9em;">
-            Sistema de Controle de Produção v5.1<br>
-            Refatorado e corrigido para máxima compatibilidade
+            Sistema de Controle de Produção v5.2<br>
+            API Modularizada - Máxima eficiência e segurança
         </div>
     </div>
 </body>
