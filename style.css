@@ -2639,3 +2639,56 @@ textarea:focus-visible {
         box-shadow: none !important;
     }
 }
+
+/* === CORREÇÃO DE Z-INDEX DOS MODAIS === */
+
+/* Modal base - z-index padrão */
+.modal {
+    z-index: 1000;
+}
+
+/* Modal de detalhes do pedido */
+#viewDetalhePedidoModal {
+    z-index: 1010;
+}
+
+/* Modal de seleção de item (deve aparecer acima do modal de detalhes) */
+#selectItemModal {
+    z-index: 1020;
+}
+
+/* Modal de adicionar item ao pedido */
+#addItemToPedidoModal,
+#addItemToPedidoExistenteModal {
+    z-index: 1030;
+}
+
+/* Modal de reorganização */
+#reorganizacaoModal {
+    z-index: 1040;
+}
+
+/* Modal de edição de processo */
+#editProcessoModal {
+    z-index: 1015;
+}
+
+/* Modal de processos do item */
+#itemProcessosModal {
+    z-index: 1015;
+}
+
+/* Modal de adicionar pedido */
+#addPedidoModal {
+    z-index: 1005;
+}
+
+/* Modal de gerenciar itens */
+#itensModal {
+    z-index: 1005;
+}
+
+/* Modal de gerenciar processos */
+#processosModal {
+    z-index: 1005;
+}

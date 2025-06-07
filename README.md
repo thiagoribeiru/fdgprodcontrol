@@ -1,334 +1,279 @@
-# Sistema de Controle de Produção v5.2
+# 🚀 Sistema JavaScript Modular v5.3
 
-## 🏭 Sobre o Sistema
+## 📋 Sobre a Modularização
 
-Sistema para controle e acompanhamento de processos produtivos, desenvolvido em PHP/MySQL com interface moderna e responsiva. 
+O arquivo `script.js` original tinha mais de **2000 linhas**, dificultando a manutenção. A versão 5.3 introduz uma **arquitetura JavaScript modular** que divide o código em 6 módulos especializados.
 
-**Versão 5.2** - API modularizada para melhor manutenção e organização do código.
-
-## ⚡ Principais Melhorias v5.2
-
-### 🔧 **API Modularizada**
-- ✅ **API dividida em módulos** - Código organizado por funcionalidade
-- ✅ **Facilita manutenção** - Arquivos menores e mais específicos
-- ✅ **Melhor organização** - Cada módulo com responsabilidade única
-- ✅ **Router centralizado** - api.php como ponto de entrada único
-- ✅ **Proteção de acesso** - Diretório api/ protegido por .htaccess
-
-### 📁 **Estrutura Modular**
-```
-api/
-├── pedidos.php         # 📦 Gestão de Pedidos
-├── itens.php          # 🏷️ Gestão de Itens
-├── processos.php      # ⚙️ Gestão de Processos
-├── receitas.php       # 📋 Receitas (Item-Processos)
-├── acompanhamento.php # 📊 Acompanhamento e Status
-└── .htaccess          # 🔒 Proteção de Acesso
-```
-
-### 🛡️ **Melhorias de Segurança**
-- ✅ **Acesso protegido** - Módulos acessíveis apenas via include
-- ✅ **Validação centralizada** - Verificações de segurança em cada módulo
-- ✅ **Headers de segurança** - Proteção contra ataques comuns
-- ✅ **Log de acesso** - Monitoramento de tentativas de acesso direto
-
-### 🔧 **Melhorias Herdadas das Versões Anteriores**
-- ✅ **Eliminada redundância** entre `config.php` e `api.php`
-- ✅ **Conexão PDO centralizada** - uma única instância para todo o sistema
-- ✅ **Configuração simplificada** - sem complexidade de ambientes
-- ✅ **Compatibilidade MySQL 5.0+** - funciona com versões antigas
-- ✅ **Instalador automático** (`setup.php`) com interface web
-- ✅ **Sistema de logs organizado** em arquivos separados
-- ✅ **Reorganização automática** de processos com correção de ordem
-
-## 📋 Requisitos
-
-- **PHP 7.0+** (testado até 8.0+)
-- **MySQL 5.0+** (compatível com versões antigas)
-- **Extensões**: PDO, PDO MySQL
-- **Permissões**: Escrita no diretório da aplicação
-- **Servidor Web**: Apache com suporte a .htaccess (recomendado)
-
-## 🚀 Instalação
-
-### Método Rápido (Recomendado)
-
-1. **Upload dos arquivos** para seu servidor
-2. **Acesse**: `http://seusite.com/setup.php`
-3. **Configure** os dados do MySQL
-4. **Clique** em "Instalar Sistema"
-5. **Remova** o `setup.php` por segurança
-
-### Configuração Manual
-
-Edite o `config.php`:
-```php
-$config_database = [
-    'host' => 'localhost',
-    'port' => '3306',
-    'dbname' => 'controle_producao',
-    'username' => 'seu_usuario',
-    'password' => 'sua_senha'
-];
-```
-
-## 📁 Estrutura dos Arquivos
+## 📁 Estrutura Modular
 
 ```
-prodcontrol/                  # 📦 Sistema de Controle de Produção
+js/
+├── core.js       # 🏗️ Módulo Principal
+├── data.js       # 📊 Carregamento de Dados  
+├── modals.js     # 🪟 Gerenciamento de Modais
+├── forms.js      # 📝 Salvamento e Formulários
+├── actions.js    # ⚡ Ações e Manipulações
+└── details.js    # 🔍 Visualização de Detalhes
+```
+
+## 🎯 Benefícios da Modularização
+
+### ✅ **Manutenção Simplificada**
+- Cada módulo tem responsabilidade única
+- Arquivos menores e mais focados
+- Fácil localização de código específico
+
+### ✅ **Desenvolvimento Ágil**
+- Múltiplos desenvolvedores podem trabalhar simultaneamente
+- Conflitos de merge reduzidos
+- Debugging mais eficiente
+
+### ✅ **Performance Melhorada**
+- Carregamento assíncrono de módulos
+- Cache individual por módulo
+- Fallback para compatibilidade
+
+### ✅ **Escalabilidade**
+- Novos módulos podem ser adicionados facilmente
+- Remoção de módulos não utilizados
+- Estrutura preparada para crescimento
+
+## 📦 Descrição dos Módulos
+
+### 🏗️ **core.js** - Módulo Principal
+**Responsabilidades:**
+- Variáveis globais do sistema
+- Configuração da API
+- Inicialização do sistema
+- Funções auxiliares comuns
+- Event listeners globais
+
+**Principais funções:**
+- `inicializarSistema()`
+- `apiRequest()`
+- `mostrarMensagem()`
+- `formatarData()`
+
+### 📊 **data.js** - Carregamento de Dados
+**Responsabilidades:**
+- Buscar dados da API
+- Carregar pedidos, itens e processos
+- Popular tabelas e selects
+- Cache de dados
+
+**Principais funções:**
+- `carregarPedidos()`
+- `carregarItens()`
+- `carregarProcessos()`
+- `carregarProcessosList()`
+
+### 🪟 **modals.js** - Gerenciamento de Modais
+**Responsabilidades:**
+- Abrir/fechar modais
+- Gerenciar estado dos modais
+- Modais específicos (reorganização, detalhes)
+- Limpeza de formulários
+
+**Principais funções:**
+- `openModal()` / `closeModal()`
+- `criarModalDetalhePedido()`
+- `mostrarMensagemReorganizacao()`
+
+### 📝 **forms.js** - Salvamento e Formulários
+**Responsabilidades:**
+- Processar submissão de formulários
+- Validações de dados
+- Salvamento via API
+- Atualização de interfaces
+
+**Principais funções:**
+- `salvarPedido()`
+- `salvarItem()`
+- `salvarProcesso()`
+- `validarProcesso()`
+
+### ⚡ **actions.js** - Ações e Manipulações
+**Responsabilidades:**
+- Ações do usuário (excluir, editar)
+- Gerenciamento de tabs
+- Verificação de ordem
+- Alteração de status
+
+**Principais funções:**
+- `excluirPedido()`
+- `verificarOrdemProcessos()`
+- `showTab()`
+- `alterarProcessoPedido()`
+
+### 🔍 **details.js** - Visualização de Detalhes
+**Responsabilidades:**
+- Exibir detalhes de pedidos
+- Agrupamento de processos
+- Renderização de status
+- Atualização de grupos
+
+**Principais funções:**
+- `verItensPedido()`
+- `agruparProcessosPorOrdemGlobal()`
+- `renderizarProcessosAgrupados()`
+
+## 🔧 Como Usar
+
+### **Instalação Simples**
+1. Crie o diretório `js/` na raiz do projeto
+2. Adicione os 6 arquivos de módulo
+3. O `script.js` detecta automaticamente e carrega os módulos
+
+### **Estrutura de Arquivos**
+```
+projeto/                  # 📦 Sistema de Controle de Produção
 ├── api/                      # 🔌 Módulos da API
-│   ├── pedidos.php          # 📦 Gestão de Pedidos
-│   ├── itens.php            # 🏷️ Gestão de Itens  
-│   ├── processos.php        # ⚙️ Gestão de Processos
-│   ├── receitas.php         # 📋 Receitas (Item-Processos)
-│   ├── acompanhamento.php   # 📊 Acompanhamento e Status
-│   └── .htaccess            # 🔒 Proteção de Acesso
+│   ├── pedidos.php           # 📦 Gestão de Pedidos
+│   ├── itens.php             # 🏷️ Gestão de Itens  
+│   ├── processos.php         # ⚙️ Gestão de Processos
+│   ├── receitas.php          # 📋 Receitas (Item-Processos)
+│   ├── acompanhamento.php    # 📊 Acompanhamento e Status
+│   └── .htaccess             # 🔒 Proteção de Acesso
+├── js/                       # 📜 Scripts JavaScript Modulares
+│   ├── core.js               # 🔧 Lógica base do sistema
+│   ├── data.js               # 📊 Manipulação de dados
+│   ├── modals.js             # 💬 Controle de modais
+│   ├── forms.js              # 📝 Manipulação de formulários
+│   ├── actions.js            # ⚙️ Eventos e interações
+│   ├── details.js            # 📋 Exibição de detalhes
 ├── logs/                     # 📝 Logs do Sistema
 │   └── sistema.log
 ├── uploads/                  # 📁 Arquivos Enviados
 ├── .gitignore                # 🚫 Arquivos Ignorados pelo Git
-├── adm.html                  # 👨‍💼 Painel Administrativo
+├── adm.html                  # 👨‍💼 Painel Administrativo com integração dos módulos JS
 ├── api.php                   # 🌐 Router Principal da API
-├── config.php                # ⚙️ Configuração Principal
+├── config.php                # ⚙️ Configuração Principal do Sistema
 ├── index.html                # 🏠 Página Inicial
-├── README.md                 # 📖 Documentação
-├── script.js                 # 🖥️ JavaScript Principal
+├── README.md                 # 📖 Documentação do Projeto
+├── script.js                 # 🖥️ Carregador central que integra os módulos do diretório js/
 ├── setup.php                 # 🛠️ Instalador do Sistema
 └── style.css                 # 🎨 Estilos Visuais
+
 ```
 
-## 🎯 Funcionalidades Principais
+### **Compatibilidade**
+- ✅ **Fallback automático**: Se os módulos não estiverem disponíveis, o sistema exibe aviso
+- ✅ **Zero configuração**: Funciona automaticamente
+- ✅ **Progressivo**: Pode migrar gradualmente
 
-### 📦 **Pedidos**
-- Criar, editar e excluir pedidos
-- Acompanhar status (corte → personalização → produção → expedição)
-- Visualizar progresso detalhado
-- Gerenciar itens por pedido
+## 🔄 Migração do Sistema Legado
 
-### 🛠️ **Processos** 
-- 4 processos padrão: Corte, Personalização, Produção, Expedição
-- **Reorganização automática** quando há conflitos de ordem
-- Adicionar processos personalizados
-- **Correção automática** de numeração duplicada
+### **Opção 1: Migração Completa (Recomendada)**
+1. Substitua o `script.js` atual pelo modular
+2. Crie a pasta `js/` com todos os módulos
+3. Teste todas as funcionalidades
 
-### 📋 **Itens**
-- Cadastrar produtos/itens
-- Definir **receitas** (quais processos cada item passa)
-- Ordem automática baseada na sequência global
+### **Opção 2: Migração Gradual**
+1. Mantenha o `script.js` original
+2. Adicione o sistema modular em paralelo
+3. Teste e migre gradualmente
 
-### 📊 **Acompanhamento**
-- Dashboard com progresso visual
-- Status: Aguardando / Em Andamento / Completo
-- **Agrupamento inteligente** por processo
+### **Opção 3: Desenvolvimento Duplo**
+- Sistema legado para produção
+- Sistema modular para desenvolvimento
 
-## 🔗 API Principais
+## 🚀 Vantagens Técnicas
 
-### Módulo Pedidos
-```php
-GET  api.php?action=get_pedidos
-POST api.php?action=add_pedido
-PUT  api.php?action=update_pedido&id=X
-DELETE api.php?action=delete_pedido&id=X
-```
-
-### Módulo Itens
-```php
-GET  api.php?action=get_itens
-POST api.php?action=add_item
-DELETE api.php?action=delete_item&id=X
-```
-
-### Módulo Processos  
-```php
-GET  api.php?action=get_processos
-POST api.php?action=add_processo
-PUT  api.php?action=update_processo&id=X
-DELETE api.php?action=delete_processo&id=X
-POST api.php?action=corrigir_ordem_processos
-```
-
-### Módulo Receitas (Item-Processos)
-```php
-GET  api.php?action=get_item_processos&item_id=X
-POST api.php?action=add_item_processo
-DELETE api.php?action=delete_item_processo&id=X
-```
-
-### Módulo Acompanhamento
-```php
-GET  api.php?action=get_pedido_detalhado&pedido_id=X
-POST api.php?action=update_processo_status
-POST api.php?action=add_item_to_pedido
-DELETE api.php?action=remove_item_from_pedido&id=X
-```
-
-## 🔧 Arquitetura da API
-
-### Router Principal (`api.php`)
-- **Ponto de entrada único** para todas as requisições
-- **Roteamento inteligente** baseado na ação solicitada
-- **Tratamento de erros centralizado**
-- **Headers de segurança** configurados
-
-### Módulos Especializados
-Cada módulo é responsável por uma área específica:
-
-- **`pedidos.php`** - CRUD completo de pedidos
-- **`itens.php`** - Gestão de itens e produtos
-- **`processos.php`** - Controle de processos e ordem
-- **`receitas.php`** - Receitas (quais processos cada item usa)
-- **`acompanhamento.php`** - Status, progresso e relatórios
-
-### Vantagens da Modularização
-- ✅ **Código organizado** - Cada arquivo com responsabilidade única
-- ✅ **Fácil manutenção** - Alterações isoladas por módulo
-- ✅ **Desenvolvimento ágil** - Múltiplos desenvolvedores podem trabalhar simultaneamente
-- ✅ **Debugging simplificado** - Erros localizados rapidamente
-- ✅ **Escalabilidade** - Novos módulos podem ser adicionados facilmente
-
-## 🔧 Manutenção
-
-### **Logs**
-- `logs/api_errors.log` - Erros da API
-- `logs/sistema.log` - Logs gerais
-- `logs/api_access.log` - Tentativas de acesso direto aos módulos
-
-### **Estrutura de Desenvolvimento**
-```php
-// Cada módulo segue este padrão:
-<?php
-// Verificar se foi chamado corretamente
-if (!defined('SISTEMA_VERSAO') || !isset($pdo)) {
-    die('Acesso direto não permitido');
+### **Carregamento Assíncrono**
+```javascript
+// Módulos são carregados sequencialmente
+for (const modulo of MODULOS) {
+    await carregarModulo(modulo);
 }
-
-// Router das ações do módulo
-switch ($action) {
-    case 'acao_1':
-        funcaoAcao1($pdo);
-        break;
-    // ...
-}
-
-// Funções específicas do módulo
-function funcaoAcao1($pdo) {
-    // Implementação
-}
-?>
 ```
 
-### **Funções Úteis**
-```php
-cleanOldLogs();           // Limpar logs antigos
-checkTableIntegrity();    // Verificar integridade
-getSystemStats();         // Estatísticas básicas
-getSystemInfo();          // Informações do sistema
+### **Detecção Automática**
+```javascript
+// Verifica se sistema modular está disponível
+const sistemaModularDisponivel = await verificarSistemaModular();
 ```
 
-## 🔍 Solução de Problemas
+### **Isolamento de Responsabilidades**
+- Cada módulo tem escopo específico
+- Redução de conflitos de nomes
+- Debugging mais eficiente
 
-**Erro 403 ao acessar módulos diretamente:**
-- ✅ **Normal** - Módulos protegidos por .htaccess
-- Use sempre `api.php?action=...` como ponto de entrada
+## 🔧 Desenvolvimento
 
-**Erro de conexão:**
-- Verifique credenciais no `config.php`
-- Confirme se MySQL está rodando
+### **Adicionando Novo Módulo**
+1. Crie o arquivo `js/novo-modulo.js`
+2. Adicione no array `MODULOS` do `script.js`
+3. Siga o padrão: `console.log('Módulo X carregado - v5.3')`
 
-**Erro de permissões:**
-- Configure permissões 755 para diretórios
-- Configure permissões 644 para arquivos
-- Diretório `api/` deve ter permissões corretas
+### **Modificando Módulo Existente**
+- Edite apenas o módulo específico
+- Mantenha as funções públicas para compatibilidade
+- Teste isoladamente
 
-**Processos com ordem duplicada:**
-- Use "Gerenciar Processos → Verificar Ordem"
-- Sistema corrige automaticamente
+### **Debugging**
+- Console mostra carregamento de cada módulo
+- Erros são isolados por módulo
+- Fallback para compatibilidade
 
-**Erro JSON inválido:**
-- Verifique extensão PDO MySQL no PHP
-- Confirme encoding UTF-8 dos arquivos
+## 📊 Estatísticas da Modularização
 
-## 🔒 Segurança
+| Métrica | Antes (v5.2) | Depois (v5.3) |
+|---------|--------------|---------------|
+| **Arquivo principal** | 2000+ linhas | ~100 linhas |
+| **Módulos** | 1 monolítico | 6 especializados |
+| **Manutenibilidade** | Difícil | Fácil |
+| **Debugging** | Complexo | Simples |
+| **Colaboração** | Conflitos | Isolado |
 
-### **Proteção dos Módulos:**
-- 🔒 **Acesso direto bloqueado** via .htaccess
-- 🔒 **Verificação de contexto** em cada módulo
-- 🔒 **Headers de segurança** configurados
-- 🔒 **Log de tentativas** de acesso não autorizado
+## 🎯 Casos de Uso
 
-### **Após Instalação:**
-1. **Remova** o `setup.php`
-2. **Configure** backup automático
-3. **Monitore** os logs regularmente
-4. **Verifique** permissões do diretório `api/`
+### **Para Desenvolvedores**
+- ✅ Editar funcionalidade específica sem afetar outras
+- ✅ Trabalhar em equipe sem conflitos
+- ✅ Debugging mais rápido
 
-### **Arquivos Sensíveis:**
-- `config.php` - **NUNCA** commitar no Git
-- `api/` - **Diretório protegido** por .htaccess
-- `logs/` - Contém informações do sistema
-- `.installed` - Marca sistema instalado
+### **Para Manutenção**
+- ✅ Localizar código rapidamente
+- ✅ Atualizar apenas partes específicas
+- ✅ Adicionar funcionalidades facilmente
 
-## 📊 Compatibilidade Testada
+### **Para Performance**
+- ✅ Cache por módulo
+- ✅ Carregamento otimizado
+- ✅ Detecção de problemas isolada
 
-- ✅ **PHP**: 7.0, 7.1, 7.2, 7.3, 7.4, 8.0+
-- ✅ **MySQL**: 5.0, 5.1, 5.5, 5.6, 5.7, 8.0+
-- ✅ **MariaDB**: 10.0+
-- ✅ **Servidores**: Apache (com .htaccess), Nginx (com configuração manual)
+## 🔮 Roadmap Futuro
 
-## 📝 Changelog v5.2
+### **v5.4 - Lazy Loading**
+- Carregamento sob demanda
+- Redução do tempo inicial
+- Otimização de recursos
 
-### ✨ **Adicionado**
-- API modularizada em 5 módulos especializados
-- Router centralizado com roteamento inteligente
-- Proteção de acesso direto aos módulos via .htaccess
-- Headers de segurança aprimorados
-- Log de tentativas de acesso direto
-- Função `str_starts_with()` para compatibilidade com PHP < 8.0
-- Documentação detalhada da arquitetura modular
+### **v5.5 - Módulos Opcionais**
+- Módulos específicos por página
+- Sistema de dependências
+- Configuração personalizada
 
-### 🔧 **Modificado**
-- `api.php` transformado em router principal
-- Código reorganizado em módulos especializados:
-  - `api/pedidos.php` - Gestão de pedidos
-  - `api/itens.php` - Gestão de itens
-  - `api/processos.php` - Gestão de processos
-  - `api/receitas.php` - Receitas (item-processos)
-  - `api/acompanhamento.php` - Acompanhamento e status
-- `config.php` atualizado para versão 5.2
-- Estrutura de diretórios documentada
+### **v5.6 - ES6 Modules**
+- Migração para import/export
+- Tree shaking
+- Bundling otimizado
 
-### 🛡️ **Segurança**
-- Diretório `api/` protegido contra acesso direto
-- Verificação de contexto em todos os módulos
-- Headers de segurança configurados
-- Monitoramento de acesso não autorizado
+## 📝 Notas de Desenvolvimento
 
-### 🎯 **Benefícios**
-- **Manutenção simplificada** - Código organizado por funcionalidade
-- **Desenvolvimento ágil** - Módulos independentes
-- **Debugging facilitado** - Erros localizados rapidamente
-- **Escalabilidade** - Estrutura preparada para crescimento
-- **Segurança aprimorada** - Proteção multicamada
+### **Padrões Seguidos**
+- ✅ Nomes de funções consistentes
+- ✅ Logging padronizado
+- ✅ Tratamento de erros uniforme
+- ✅ Compatibilidade mantida
 
-## 📝 Changelog v5.1
-
-### 🐛 **Corrigido**
-- Parse error crítico no `setup.php` linha 536
-- Linhas duplicadas que causavam conflito de sintaxe
-- Encoding de caracteres em alguns comentários
-- Compatibilidade com interpretadores PHP mais restritivos
-
-### 🔧 **Modificado**
-- Versão atualizada para 5.1 em todos os arquivos
-- Mensagens do instalador atualizadas
-- Documentação corrigida e atualizada
-
-### ✨ **Melhorado**
-- Estabilidade do processo de instalação
-- Mensagens de erro mais claras no instalador
-- Compatibilidade com mais ambientes de hospedagem
+### **Testes Sugeridos**
+- [ ] Carregar sistema com todos os módulos
+- [ ] Testar fallback sem módulos
+- [ ] Verificar funcionalidades por módulo
+- [ ] Testar em diferentes navegadores
 
 ---
 
-**Sistema de Controle de Produção v5.2**  
-*Modular, eficiente e escalável*
+**Sistema de Controle de Produção v5.3**  
+*JavaScript Modular - Manutenção Simplificada*
