@@ -1,0 +1,339 @@
+/* css/responsive.css - Media Queries e Responsividade v5.3 */
+
+/* === TABLETS === */
+@media (max-width: 1024px) {
+    .title-container {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    
+    .title-container h1 {
+        font-size: 24px;
+    }
+    
+    .add-button {
+        font-size: 14px;
+        padding: 10px 15px;
+    }
+    
+    .reorganizacao-stats {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+}
+
+/* === TABLETS E MOBILE === */
+@media (max-width: 768px) {
+    /* Layout Geral */
+    .title-container {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .modal-content {
+        width: 95%;
+        margin: 2% auto;
+    }
+    
+    .form-row {
+        flex-direction: column;
+        gap: 0;
+    }
+    
+    .tablePedidos {
+        font-size: 12px;
+    }
+    
+    .tablePedidos th,
+    .tablePedidos td {
+        padding: 6px;
+    }
+    
+    /* Layout Compacto */
+    .info-row {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .info-card {
+        min-width: auto;
+        text-align: left;
+    }
+    
+    .progress-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 15px;
+    }
+    
+    .actions-compact {
+        flex-direction: row;
+        justify-content: center;
+    }
+    
+    /* Processos */
+    .processo-grupo-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 12px;
+    }
+    
+    .processo-numero {
+        margin-right: 0;
+        align-self: flex-start;
+    }
+    
+    .processo-titulo {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    
+    .processo-status-line {
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    .processo-status-line .status-select {
+        flex: 1;
+        min-width: auto;
+        margin-right: 10px;
+    }
+    
+    .processo-status-icon {
+        margin-left: 0;
+        align-self: center;
+    }
+    
+    .itens-agrupados {
+        justify-content: flex-start;
+        margin-top: 12px;
+    }
+    
+    .item-badge {
+        font-size: 11px;
+        padding: 4px 8px;
+    }
+    
+    .ordem-info {
+        text-align: center;
+    }
+    
+    .grupo-count {
+        font-size: 11px;
+        padding: 4px 8px;
+    }
+    
+    .ordem-badge {
+        width: 32px;
+        height: 32px;
+        font-size: 14px;
+    }
+    
+    .processo-nome {
+        font-size: 14px;
+    }
+    
+    /* Info Boxes */
+    .info-box {
+        padding: 12px;
+        margin: 10px 0;
+    }
+    
+    .info-box h4 {
+        font-size: 14px;
+    }
+    
+    .info-box p, .info-box li {
+        font-size: 13px;
+    }
+    
+    .ordem-feedback {
+        padding: 6px;
+        font-size: 12px;
+    }
+    
+    .verification-container {
+        padding: 15px;
+    }
+    
+    .reorganizacao-details {
+        padding: 12px;
+    }
+    
+    .btn-verificar-ordem {
+        padding: 6px 12px;
+        font-size: 12px;
+        margin-left: 5px;
+    }
+    
+    .ordem-tooltip::before {
+        left: 0;
+        transform: none;
+        white-space: normal;
+        max-width: 200px;
+    }
+}
+
+/* === MOBILE PEQUENO === */
+@media (max-width: 480px) {
+    .title-container {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .modal-content {
+        width: 95%;
+        margin: 2% auto;
+    }
+    
+    .form-row {
+        flex-direction: column;
+        gap: 0;
+    }
+    
+    .tablePedidos {
+        font-size: 12px;
+    }
+    
+    .tablePedidos th,
+    .tablePedidos td {
+        padding: 6px;
+    }
+    
+    .processo-grupo-item {
+        padding: 12px;
+    }
+    
+    .ordem-badge {
+        width: 32px;
+        height: 32px;
+        font-size: 14px;
+    }
+    
+    .processo-nome {
+        font-size: 14px;
+    }
+    
+    .item-badge {
+        font-size: 10px;
+        padding: 3px 6px;
+    }
+    
+    .header h1 {
+        font-size: 2rem;
+    }
+    
+    .header p {
+        font-size: 1rem;
+    }
+    
+    .menu-card {
+        padding: 30px 20px;
+    }
+    
+    .menu-icon {
+        font-size: 3rem;
+    }
+    
+    .menu-card h2 {
+        font-size: 1.5rem;
+    }
+}
+
+/* === PRINT STYLES === */
+@media print {
+    .modal,
+    .add-button,
+    .btn-edit,
+    .btn-delete,
+    .btn-cancel,
+    .info-box {
+        display: none !important;
+    }
+    
+    body {
+        background: white !important;
+        color: black !important;
+    }
+    
+    .tablePedidos {
+        box-shadow: none !important;
+        border: 1px solid #000 !important;
+    }
+    
+    .processo-grupo-item {
+        box-shadow: none !important;
+        border: 1px solid #ccc !important;
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+    
+    .ordem-badge {
+        box-shadow: none !important;
+    }
+}
+
+/* === LANDSCAPE MOBILE === */
+@media screen and (max-width: 768px) and (orientation: landscape) {
+    .header {
+        padding: 20px 0;
+        margin-bottom: 30px;
+    }
+    
+    .header h1 {
+        font-size: 2.5rem;
+    }
+    
+    .menu-container {
+        gap: 20px;
+    }
+    
+    .menu-card {
+        padding: 25px;
+    }
+}
+
+/* === AJUSTES ESPECÍFICOS PARA TELAS MUITO PEQUENAS === */
+@media (max-width: 320px) {
+    .main-container {
+        padding: 10px;
+    }
+    
+    .title-container {
+        padding: 15px;
+    }
+    
+    .modal-content {
+        width: 98%;
+        margin: 1% auto;
+    }
+    
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        padding: 10px 12px;
+        font-size: 14px;
+    }
+    
+    .btn-save,
+    .btn-cancel {
+        padding: 10px 20px;
+        font-size: 14px;
+    }
+    
+    .menu-card {
+        padding: 20px 15px;
+    }
+    
+    .menu-icon {
+        font-size: 2.5rem;
+    }
+    
+    .menu-card h2 {
+        font-size: 1.3rem;
+    }
+}

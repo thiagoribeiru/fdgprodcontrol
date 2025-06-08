@@ -1,0 +1,237 @@
+/* css/layout.css - Layout Principal do Sistema v5.3 */
+
+/* === CONTAINER PRINCIPAL === */
+.main-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* === HEADER DA PÁGINA INICIAL === */
+.header {
+    text-align: center;
+    color: #2c3e50;
+    margin-bottom: 50px;
+    padding: 40px 0;
+}
+
+.header h1 {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+}
+
+.header p {
+    font-size: 1.2rem;
+    font-weight: 300;
+    opacity: 0.9;
+}
+
+/* === CONTAINER DE MENU === */
+.menu-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    flex: 1;
+    align-items: start;
+    margin-bottom: 50px;
+}
+
+/* === TITLE CONTAINER === */
+.title-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+/* === FOOTER === */
+.footer {
+    text-align: center;
+    color: #6c757d;
+    opacity: 0.8;
+    padding: 20px 0;
+}
+
+/* === SEÇÕES === */
+.itens-section {
+    margin-top: 25px;
+    padding: 25px;
+    border-top: 2px solid #e1e1e1;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.section-header h3 {
+    margin: 0;
+    color: #333;
+    font-weight: 600;
+}
+
+/* === TABS === */
+.tabs {
+    display: flex;
+    border-bottom: 2px solid #e1e1e1;
+    margin: 25px;
+    margin-bottom: 0;
+}
+
+.tab-button {
+    background-color: transparent;
+    border: none;
+    padding: 15px 25px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    color: #666;
+    border-bottom: 3px solid transparent;
+    transition: all 0.3s;
+    font-family: 'Poppins', sans-serif;
+}
+
+.tab-button:hover {
+    color: #4CAF50;
+    background-color: #f8f9fa;
+}
+
+.tab-button.active {
+    color: #4CAF50;
+    border-bottom-color: #4CAF50;
+    background-color: #f8f9fa;
+}
+
+.tab-content {
+    display: none;
+    padding: 25px;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* === GRID LAYOUTS === */
+.form-row {
+    display: flex;
+    gap: 20px;
+}
+
+.form-row .form-group {
+    flex: 1;
+}
+
+.info-row {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+
+.progress-row {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+/* === LAYOUT COMPACTO === */
+.pedido-info-compact {
+    padding: 20px;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e1e1e1;
+}
+
+.progress-container {
+    flex: 1;
+}
+
+.progress-container label {
+    display: block;
+    font-weight: 600;
+    color: #666;
+    font-size: 12px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+}
+
+.actions-compact {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.actions-compact .btn-edit {
+    padding: 8px 16px;
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+/* === ACOMPANHAMENTO === */
+.processos-acompanhamento {
+    padding: 25px;
+}
+
+.processos-acompanhamento h3 {
+    margin-bottom: 20px;
+    color: #333;
+    font-size: 18px;
+    border-bottom: 2px solid #4CAF50;
+    padding-bottom: 10px;
+}
+
+.processos-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* === CONTAINER DE VERIFICAÇÃO === */
+.verification-container {
+    text-align: center;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.verification-container h3 {
+    color: #495057;
+    margin-bottom: 15px;
+}
+
+.verification-container p {
+    color: #6c757d;
+    margin-bottom: 20px;
+}
+
+.verification-buttons {
+    margin: 20px 0;
+}
+
+.verification-result {
+    margin-top: 20px;
+    display: none;
+}
+
+.verification-result-content {
+    background: #d4edda;
+    color: #155724;
+    padding: 15px;
+    border-radius: 6px;
+    border-left: 4px solid #4CAF50;
+    white-space: pre-line;
+}

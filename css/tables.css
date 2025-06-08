@@ -1,0 +1,159 @@
+/* css/tables.css - Tabelas e Listagens v5.3 */
+
+/* === TABELA PRINCIPAL === */
+.tablePedidos {
+    width: 95%;
+    max-width: 1200px;
+    margin: 0 auto;
+    border-collapse: collapse;
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    color: #333;
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.tablePedidos th {
+    background: linear-gradient(135deg, #4CAF50, #45a049);
+    color: white;
+    padding: 15px;
+    text-align: left;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.tablePedidos td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.tablePedidos tr:nth-child(even) {
+    background-color: #f8f9fa;
+}
+
+.tablePedidos tr:hover {
+    background-color: #e8f5e8;
+    transform: scale(1.01);
+    transition: all 0.2s ease;
+}
+
+.tablePedidos tbody tr {
+    transition: all 0.3s ease;
+}
+
+.tablePedidos tbody tr:hover {
+    background-color: #e8f5e8;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* === TABELA DE ITENS === */
+.table-itens {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.table-itens th {
+    background-color: #f1f3f4;
+    color: #333;
+    padding: 12px;
+    text-align: left;
+    font-weight: 600;
+    border-bottom: 2px solid #e1e1e1;
+}
+
+.table-itens td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #eee;
+}
+
+.table-itens tr:hover {
+    background-color: #f5f5f5;
+}
+
+/* === INDICADORES VISUAIS === */
+.important-row {
+    background: linear-gradient(90deg, transparent, rgba(255, 193, 7, 0.1), transparent);
+    border-left: 4px solid #FFC107;
+}
+
+.protected-row {
+    background: linear-gradient(90deg, transparent, rgba(76, 175, 80, 0.1), transparent);
+    border-left: 4px solid #4CAF50;
+}
+
+/* === ALERTAS NA TABELA === */
+.alert-ordem-duplicada {
+    background: #fff3cd !important;
+    color: #856404 !important;
+    text-align: center;
+    padding: 15px;
+    font-weight: 600;
+    border-left: 4px solid #ffc107;
+}
+
+.ordem-duplicada {
+    background: #ffebee !important;
+    color: #c62828 !important;
+    font-weight: bold;
+    position: relative;
+}
+
+.ordem-duplicada::after {
+    content: '⚠️';
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 14px;
+}
+
+/* === PREVIEW DE REORGANIZAÇÃO === */
+.reorganizacao-preview {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 15px;
+    margin: 15px 0;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.reorganizacao-preview h5 {
+    margin: 0 0 10px 0;
+    color: #495057;
+    font-size: 14px;
+}
+
+.reorganizacao-preview .processo-preview {
+    display: flex;
+    align-items: center;
+    padding: 5px 0;
+    font-size: 13px;
+}
+
+.reorganizacao-preview .ordem-antes {
+    color: #dc3545;
+    text-decoration: line-through;
+    margin-right: 10px;
+}
+
+.reorganizacao-preview .ordem-depois {
+    color: #28a745;
+    font-weight: bold;
+}
+
+.reorganizacao-preview .processo-nome {
+    flex: 1;
+    margin-left: 10px;
+    color: #495057;
+}
+    

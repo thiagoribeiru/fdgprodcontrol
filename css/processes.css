@@ -1,0 +1,284 @@
+/* css/processes.css - Processos e Acompanhamento v5.3 */
+
+/* === PROCESSO GRUPO ITEMS === */
+.processo-grupo-item {
+    display: flex;
+    align-items: center;
+    padding: 16px;
+    border-radius: 10px;
+    border-left: 4px solid #ddd;
+    background: white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+    position: relative;
+    margin-bottom: 12px;
+    overflow: hidden;
+}
+
+.processo-grupo-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+    transition: left 0.5s;
+}
+
+.processo-grupo-item:hover::before {
+    left: 100%;
+}
+
+.processo-grupo-item:hover {
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+    transform: translateY(-1px);
+}
+
+.processo-grupo-item.aguardando {
+    border-left-color: #ffc107;
+    background: linear-gradient(90deg, #fff8e1, white);
+}
+
+.processo-grupo-item.em_andamento {
+    border-left-color: #2196F3;
+    background: linear-gradient(90deg, #e3f2fd, white);
+    animation: pulseGlow 2s infinite;
+}
+
+.processo-grupo-item.completo {
+    border-left-color: #4CAF50;
+    background: linear-gradient(90deg, #e8f5e8, white);
+    opacity: 0.9;
+}
+
+.processo-grupo-item.processo-parcial {
+    border-left-style: dashed;
+    background: linear-gradient(90deg, #fff3e0, white);
+}
+
+.processo-grupo-item.processo-parcial .ordem-badge {
+    background: linear-gradient(135deg, #ff9800, #f57c00);
+    box-shadow: 0 3px 8px rgba(255, 152, 0, 0.4);
+}
+
+.processo-grupo-item.disabled {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.processo-grupo-item.highlight {
+    animation: highlightPulse 1s ease-in-out;
+}
+
+@keyframes pulseGlow {
+    0% { 
+        border-left-color: #2196F3;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    50% { 
+        border-left-color: #1976D2;
+        box-shadow: 0 4px 16px rgba(33, 150, 243, 0.2);
+    }
+    100% { 
+        border-left-color: #2196F3;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+}
+
+@keyframes highlightPulse {
+    0% { background-color: white; }
+    50% { background-color: #fff3cd; }
+    100% { background-color: white; }
+}
+
+/* === PROCESSO NUMERO === */
+.processo-numero {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 16px;
+}
+
+/* === PROCESSO DETALHES === */
+.processo-detalhes {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.processo-titulo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.processo-nome {
+    font-weight: 600;
+    color: #333;
+    font-size: 16px;
+}
+
+/* === ITENS AGRUPADOS === */
+.itens-agrupados {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+    max-width: 100%;
+}
+
+.processo-item-parcial .item-badge {
+    background: linear-gradient(135deg, #fff3e0, #ffcc02);
+    color: #e65100;
+    border-color: #ffb74d;
+}
+
+/* === PROCESSO STATUS LINE === */
+.processo-status-line {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+/* === PROCESSO SIMPLIFICADO === */
+.processo-simplificado {
+    background: #f8f9fa;
+    border-left: 4px solid #4CAF50;
+    padding: 10px 15px;
+    margin: 5px 0;
+    border-radius: 0 6px 6px 0;
+}
+
+.processo-simplificado .processo-nome {
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.processo-simplificado .ordem-info {
+    font-size: 12px;
+    color: #666;
+    margin-top: 5px;
+}
+
+/* === PROCESSO MOVIDO === */
+.processo-movido {
+    background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+    border-left: 4px solid #4CAF50;
+    animation: processoMovidoGlow 2s ease-in-out;
+}
+
+@keyframes processoMovidoGlow {
+    0% { background: #e8f5e9; }
+    50% { background: #c8e6c9; }
+    100% { background: #e8f5e9; }
+}
+
+.processo-recem-movido {
+    position: relative;
+}
+
+.processo-recem-movido::before {
+    content: '🔄';
+    position: absolute;
+    left: -5px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 16px;
+    animation: rotateIcon 2s linear infinite;
+}
+
+@keyframes rotateIcon {
+    from { transform: translateY(-50%) rotate(0deg); }
+    to { transform: translateY(-50%) rotate(360deg); }
+}
+
+/* === REORGANIZAÇÃO === */
+.reorganizacao-loading {
+    position: relative;
+    overflow: hidden;
+}
+
+.reorganizacao-loading::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(33, 150, 243, 0.2), transparent);
+    animation: reorganizacaoSweep 1.5s infinite;
+}
+
+@keyframes reorganizacaoSweep {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+.reorganizacao-sucesso {
+    animation: reorganizacaoSucesso 3s ease-in-out;
+}
+
+@keyframes reorganizacaoSucesso {
+    0% { background: white; }
+    20% { background: #e8f5e9; }
+    40% { background: white; }
+    60% { background: #e8f5e9; }
+    80% { background: white; }
+    100% { background: white; }
+}
+
+/* === PROCESSOS NUMERADOS === */
+.processos-numerados {
+    counter-reset: processo-counter;
+}
+
+.processos-numerados .processo-item {
+    counter-increment: processo-counter;
+}
+
+.processos-numerados .processo-item::before {
+    content: counter(processo-counter);
+    background: #4CAF50;
+    color: white;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+/* === TOOLTIP PARA AGRUPAMENTOS === */
+.processo-grupo-item[title]:hover::after {
+    content: attr(title);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.9);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    white-space: nowrap;
+    z-index: 1000;
+    animation: tooltipSlideIn 0.2s ease;
+}
+
+@keyframes tooltipSlideIn {
+    from { 
+        opacity: 0; 
+        transform: translateX(-50%) translateY(5px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateX(-50%) translateY(0); 
+    }
+}

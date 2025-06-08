@@ -1,0 +1,302 @@
+/* css/status.css - Status e Indicadores v5.3 */
+
+/* === STATUS DOS PROCESSOS === */
+.status-corte,
+.status-personalização,
+.status-produção,
+.status-expedição {
+    background: linear-gradient(135deg, #ff9800, #f57c00);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-block;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.status-personalização {
+    background: linear-gradient(135deg, #2196F3, #1976D2);
+}
+
+.status-produção {
+    background: linear-gradient(135deg, #9C27B0, #7B1FA2);
+}
+
+.status-expedição {
+    background: linear-gradient(135deg, #4CAF50, #388E3C);
+}
+
+.status-corte::before,
+.status-personalização::before,
+.status-produção::before,
+.status-expedição::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    transition: left 0.5s;
+}
+
+.status-corte:hover::before,
+.status-personalização:hover::before,
+.status-produção:hover::before,
+.status-expedição:hover::before {
+    left: 100%;
+}
+
+.status-corte:hover,
+.status-personalização:hover,
+.status-produção:hover,
+.status-expedição:hover {
+    transform: scale(1.05);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+/* === STATUS ICONS === */
+.status-icon {
+    font-size: 24px;
+    display: inline-block;
+}
+
+.status-icon.waiting {
+    opacity: 0.6;
+}
+
+.status-icon.progress {
+    animation: spin 2s linear infinite;
+}
+
+.status-icon.complete {
+    color: #4CAF50;
+}
+
+/* === PROCESSO STATUS ICON === */
+.processo-status-icon {
+    display: flex;
+    align-items: center;
+    margin-left: 16px;
+}
+
+/* === LABELS DE TIPO === */
+.tipo-sistema {
+    color: #4CAF50;
+    font-weight: bold;
+    font-size: 12px;
+}
+
+.tipo-personalizado {
+    color: #666;
+    font-size: 12px;
+}
+
+.processo-protegido {
+    color: #ccc;
+    font-size: 14px;
+    cursor: help;
+}
+
+.ordem-global-label {
+    color: #666;
+    font-size: 12px;
+    font-weight: normal;
+}
+
+/* === MENSAGENS === */
+.message {
+    padding: 15px 20px;
+    margin: 15px auto;
+    border-radius: 8px;
+    font-weight: 600;
+    max-width: 600px;
+    text-align: center;
+    animation: messageSlideIn 0.3s ease;
+}
+
+@keyframes messageSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.message.success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.message.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.message.detailed {
+    white-space: pre-line;
+    text-align: left;
+    max-width: 500px;
+    word-wrap: break-word;
+}
+
+/* === ALERTAS === */
+.alert {
+    padding: 15px;
+    margin: 15px 0;
+    border-radius: 8px;
+    font-weight: 500;
+}
+
+.alert-warning {
+    background-color: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeaa7;
+}
+
+.alert-info {
+    background-color: #d1ecf1;
+    color: #0c5460;
+    border: 1px solid #bee5eb;
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.alert-ordem-problemas {
+    background: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeaa7;
+    padding: 15px;
+    border-radius: 8px;
+    margin: 10px 0;
+    text-align: center;
+    animation: alertPulse 2s ease-in-out infinite;
+}
+
+@keyframes alertPulse {
+    0%, 100% { background: #fff3cd; }
+    50% { background: #fff8e1; }
+}
+
+/* === INFO BOXES === */
+.info-box {
+    padding: 15px;
+    border-radius: 8px;
+    margin: 15px 0;
+    border-left: 4px solid;
+}
+
+.info-box h4 {
+    margin: 0 0 10px 0;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.info-box p {
+    margin: 0;
+    font-size: 14px;
+}
+
+.info-box ul {
+    margin: 10px 0 0 20px;
+    font-size: 14px;
+}
+
+.info-box li {
+    margin: 5px 0;
+}
+
+.ordem-global-info {
+    background: #e3f2fd;
+    border-left-color: #2196F3;
+    color: #1976d2;
+}
+
+.reorganizacao-info {
+    background: #e3f2fd;
+    border-left-color: #2196F3;
+    color: #1976d2;
+}
+
+.reorganizacao-edit-info {
+    background: #e3f2fd;
+    border-left-color: #2196F3;
+    color: #1976d2;
+    margin: 20px 25px;
+}
+
+.warning-info {
+    background: #fff3cd;
+    border-left-color: #ffc107;
+    color: #856404;
+}
+
+.success-info {
+    background: #d4edda;
+    border-left-color: #4CAF50;
+    color: #155724;
+}
+
+.verification-info {
+    background: #e9ecef;
+    border-left-color: #6c757d;
+    color: #495057;
+}
+
+.new-features {
+    background: #e8f5e9;
+    border-left-color: #4CAF50;
+    color: #2e7d32;
+    padding: 15px;
+    margin: 20px 0;
+    border-radius: 5px;
+}
+
+.warning-box {
+    background: #fff3cd;
+    border-left: 4px solid #ffc107;
+    padding: 15px;
+    margin: 20px 0;
+    border-radius: 5px;
+    color: #856404;
+}
+
+.ordem-global-info {
+    background: #f0f8ff;
+    border: 1px solid #e1f5fe;
+    border-radius: 6px;
+    padding: 12px;
+    margin: 15px 0;
+    font-size: 13px;
+    color: #0277bd;
+}
+
+/* === REQUIREMENTS === */
+.req-ok { color: #4CAF50; }
+.req-error { color: #f44336; }
+
+/* === INDICADORES DE PRIORIDADE === */
+.pedido-urgente .info-card {
+    border-left: 4px solid #f44336;
+}
+
+.pedido-normal .info-card {
+    border-left: 4px solid #4CAF50;
+}
+
+.pedido-baixa .info-card {
+    border-left: 4px solid #9E9E9E;
+}
