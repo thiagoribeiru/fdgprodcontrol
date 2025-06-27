@@ -1,5 +1,5 @@
 <?php
-// api.php - Router Principal do Sistema de Controle de Produção v5.2 (VERSÃO CORRIGIDA)
+// api.php - Router Principal do Sistema de Controle de Produção v0.5.4 (VERSÃO CORRIGIDA)
 
 // === CONFIGURAÇÃO DE DEBUG ===
 error_reporting(E_ALL);

@@ -1,4 +1,4 @@
-// js/details.js - Módulo de Visualização de Detalhes v5.3
+// js/details.js - Módulo de Visualização de Detalhes v0.5.4
 
 // === VISUALIZAÇÃO DE DETALHES ===
 async function verItensPedido(pedidoId) {
@@ -189,4 +189,4 @@ window.renderizarProcessosAgrupados = renderizarProcessosAgrupados;
 window.agruparProcessosPorOrdemGlobal = agruparProcessosPorOrdemGlobal;
 window.updateGrupoProcessoStatus = updateGrupoProcessoStatus;
 
-console.log('Módulo Details carregado - Visualização de detalhes v5.3');
+console.log('Módulo Details carregado - Visualização de detalhes v0.5.4');

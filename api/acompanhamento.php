@@ -32,6 +32,10 @@ switch ($action) {
         removeItemFromPedido($pdo);
         break;
         
+    case 'update_pedido_item':
+        updatePedidoItem($pdo);
+        break;
+        
     case 'update_processo_pedido':
         updateProcessoPedido($pdo);
         break;
@@ -117,7 +121,7 @@ function getPedidoDetalhado($pdo) {
 }
 
 /**
- * Buscar itens de um pedido
+ * Buscar itens de um pedido com informações detalhadas
  */
 function getPedidoItens($pdo) {
     try {
@@ -128,7 +132,27 @@ function getPedidoItens($pdo) {
         }
         
         $stmt = $pdo->prepare("
-            SELECT pi.*, i.nome as item_nome, i.descricao as item_descricao
+            SELECT 
+                pi.id,
+                pi.pedido_id,
+                pi.item_id,
+                pi.quantidade,
+                pi.observacoes,
+                i.nome as item_nome, 
+                i.descricao as item_descricao,
+                (
+                    SELECT COUNT(*)
+                    FROM item_processos ip2
+                    INNER JOIN pedido_item_processos pip2 ON ip2.processo_id = pip2.processo_id
+                    WHERE ip2.item_id = pi.item_id 
+                    AND pip2.pedido_item_id = pi.id
+                    AND pip2.status = 'completo'
+                ) as processos_completos,
+                (
+                    SELECT COUNT(*)
+                    FROM item_processos ip3
+                    WHERE ip3.item_id = pi.item_id
+                ) as total_processos
             FROM pedido_itens pi
             INNER JOIN itens i ON pi.item_id = i.id
             WHERE pi.pedido_id = ?
@@ -137,6 +161,25 @@ function getPedidoItens($pdo) {
         
         $stmt->execute([$pedido_id]);
         $itens = $stmt->fetchAll();
+        
+        // Adicionar informações de progresso para cada item
+        foreach ($itens as &$item) {
+            if ($item['total_processos'] > 0) {
+                $item['progresso_percentual'] = round(($item['processos_completos'] / $item['total_processos']) * 100, 2);
+            } else {
+                $item['progresso_percentual'] = 0;
+            }
+            
+            // Determinar status geral do item
+            if ($item['processos_completos'] == $item['total_processos'] && $item['total_processos'] > 0) {
+                $item['status_geral'] = 'completo';
+            } elseif ($item['processos_completos'] > 0) {
+                $item['status_geral'] = 'em_andamento';
+            } else {
+                $item['status_geral'] = 'aguardando';
+            }
+        }
+        
         jsonResponse($itens);
         
     } catch (Exception $e) {
@@ -431,6 +474,75 @@ function removeItemFromPedido($pdo) {
         }
         logError("removeItemFromPedido: " . $e->getMessage());
         jsonResponse(['error' => 'Erro ao remover item do pedido'], 500);
+    }
+}
+
+/**
+ * Atualizar item do pedido (quantidade e observações)
+ */
+function updatePedidoItem($pdo) {
+    try {
+        $pedido_item_id = $_GET['id'] ?? 0;
+        $input = file_get_contents('php://input');
+        $data = json_decode($input, true);
+        
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            jsonResponse(['error' => 'JSON inválido'], 400);
+        }
+        
+        if (!$pedido_item_id) {
+            jsonResponse(['error' => 'ID do item do pedido é obrigatório'], 400);
+        }
+        
+        $error = validateRequired($data, ['quantidade']);
+        if ($error) {
+            jsonResponse(['error' => $error], 400);
+        }
+        
+        if ($data['quantidade'] < 1) {
+            jsonResponse(['error' => 'Quantidade deve ser maior que zero'], 400);
+        }
+        
+        // Verificar se o item existe
+        $stmt = $pdo->prepare("
+            SELECT pi.id, i.nome as item_nome, p.codigo_pedido
+            FROM pedido_itens pi
+            INNER JOIN itens i ON pi.item_id = i.id
+            INNER JOIN pedidos p ON pi.pedido_id = p.id
+            WHERE pi.id = ?
+        ");
+        $stmt->execute([$pedido_item_id]);
+        $info = $stmt->fetch();
+        
+        if (!$info) {
+            jsonResponse(['error' => 'Item do pedido não encontrado'], 404);
+        }
+        
+        // Atualizar o item
+        $stmt = $pdo->prepare("
+            UPDATE pedido_itens 
+            SET quantidade = ?, observacoes = ?
+            WHERE id = ?
+        ");
+        
+        $stmt->execute([
+            $data['quantidade'],
+            $data['observacoes'] ?? '',
+            $pedido_item_id
+        ]);
+        
+        if ($stmt->rowCount() === 0) {
+            jsonResponse(['error' => 'Nenhuma alteração foi feita'], 400);
+        }
+        
+        jsonResponse([
+            'success' => true,
+            'message' => "Item '{$info['item_nome']}' atualizado com sucesso"
+        ]);
+        
+    } catch (Exception $e) {
+        logError("updatePedidoItem: " . $e->getMessage());
+        jsonResponse(['error' => 'Erro ao atualizar item do pedido'], 500);
     }
 }
 

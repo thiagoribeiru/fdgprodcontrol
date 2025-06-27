@@ -106,6 +106,84 @@
         </div>
     </div>
 
+    <!-- Modal Editar Pedido -->
+    <div id="editPedidoModal" class="modal">
+        <div class="modal-content large">
+            <div class="modal-header">
+                <h2>Editar Pedido</h2>
+                <span class="close" onclick="closeEditPedidoModal()">&times;</span>
+            </div>
+            
+            <form id="editPedidoForm">
+                <input type="hidden" id="editPedidoId">
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editDataEntrada">Data de Entrada:</label>
+                        <input type="date" id="editDataEntrada" name="dataEntrada" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editDataEntrega">Data de Entrega:</label>
+                        <input type="date" id="editDataEntrega" name="dataEntrega" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editCodigoPedido">Código do Pedido:</label>
+                        <input type="text" id="editCodigoPedido" name="codigoPedido" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editCliente">Cliente:</label>
+                        <input type="text" id="editCliente" name="cliente" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="editProcessoAtual">Processo Atual:</label>
+                    <select id="editProcessoAtual" name="processoAtual" required>
+                        <option value="">Selecione o processo</option>
+                        <option value="corte">Corte</option>
+                        <option value="personalização">Personalização</option>
+                        <option value="produção">Produção</option>
+                        <option value="expedição">Expedição</option>
+                    </select>
+                </div>
+
+                <div class="itens-section">
+                    <div class="section-header">
+                        <h3>Itens do Pedido</h3>
+                        <button type="button" class="add-button small" onclick="openSelectItemModalEdit()">Adicionar Item</button>
+                    </div>
+                    
+                    <div class="info-box warning-info">
+                        <p><strong>⚠️ Atenção:</strong> Alterações nos itens do pedido podem afetar o progresso dos processos em andamento. Remover itens com processos completos irá apagar o histórico desses processos.</p>
+                    </div>
+                    
+                    <table class="table-itens" id="editPedidoItensTable">
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th>Quantidade</th>
+                                <th>Observações</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="editPedidoItensBody">
+                            <!-- Itens serão carregados aqui -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" onclick="closeEditPedidoModal()">Cancelar</button>
+                    <button type="submit" class="btn-save">Salvar Alterações</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Modal Selecionar Item -->
     <div id="selectItemModal" class="modal">
         <div class="modal-content">
@@ -153,6 +231,35 @@
                 <div class="modal-footer">
                     <button type="button" class="btn-cancel" onclick="closeAddItemToPedidoModal()">Cancelar</button>
                     <button type="submit" class="btn-save">Adicionar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Editar Item do Pedido -->
+    <div id="editItemPedidoModal" class="modal">
+        <div class="modal-content small">
+            <div class="modal-header">
+                <h2>Editar Item do Pedido</h2>
+                <span class="close" onclick="closeEditItemPedidoModal()">&times;</span>
+            </div>
+            
+            <form id="editItemPedidoForm">
+                <input type="hidden" id="editItemPedidoId">
+                <div class="form-group">
+                    <label id="editItemPedidoNome"></label>
+                </div>
+                <div class="form-group">
+                    <label for="editItemQuantidade">Quantidade:</label>
+                    <input type="number" id="editItemQuantidade" name="quantidade" min="1" required>
+                </div>
+                <div class="form-group">
+                    <label for="editItemObservacoes">Observações:</label>
+                    <textarea id="editItemObservacoes" name="observacoes" rows="3"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" onclick="closeEditItemPedidoModal()">Cancelar</button>
+                    <button type="submit" class="btn-save">Salvar Alterações</button>
                 </div>
             </form>
         </div>

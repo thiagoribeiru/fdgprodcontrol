@@ -2,7 +2,7 @@
 // config.php - Configurações Centralizadas do Sistema de Controle de Produção
 
 // Versão do sistema
-define('SISTEMA_VERSAO', '5.2');
+define('SISTEMA_VERSAO', '0.5.4');
 define('SISTEMA_NOME', 'Sistema de Controle de Produção');
 
 // === CONFIGURAÇÕES DO BANCO DE DADOS ===

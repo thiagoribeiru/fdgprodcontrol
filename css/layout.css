@@ -1,4 +1,4 @@
-/* css/layout.css - Layout Principal do Sistema v5.3 */
+/* css/layout.css - Layout Principal do Sistema v0.5.4 */
 
 /* === CONTAINER PRINCIPAL === */
 .main-container {
@@ -66,10 +66,26 @@
 /* === SEÇÕES === */
 .itens-section {
     margin-top: 25px;
-    padding: 25px;
+    padding: 0; /* Removido padding daqui, será aplicado via modal */
     border-top: 2px solid #e1e1e1;
     background-color: #f8f9fa;
     border-radius: 8px;
+}
+
+/* Padding interno para o conteúdo da seção de itens */
+.itens-section .section-header,
+.itens-section .table-itens,
+.itens-section .info-box {
+    margin: 0 25px;
+}
+
+.itens-section .section-header {
+    padding-top: 25px;
+}
+
+.itens-section .table-itens,
+.itens-section .info-box:last-child {
+    padding-bottom: 25px;
 }
 
 .section-header {
@@ -89,8 +105,7 @@
 .tabs {
     display: flex;
     border-bottom: 2px solid #e1e1e1;
-    margin: 25px;
-    margin-bottom: 0;
+    margin: 0; /* Removido margin das tabs */
 }
 
 .tab-button {
@@ -119,7 +134,7 @@
 
 .tab-content {
     display: none;
-    padding: 25px;
+    padding: 25px; /* Padding consistente para tab-content */
 }
 
 .tab-content.active {

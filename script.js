@@ -1,9 +1,9 @@
-// script.js - Sistema de Controle de Produção v5.3 - Versão Modular
+// script.js - Sistema de Controle de Produção v0.5.4 - Versão Modular
 
 // === NOVO SISTEMA MODULAR ===
 // Este arquivo agora serve como carregador dos módulos
 
-console.log('🚀 Iniciando Sistema de Controle de Produção v5.3 - Arquitetura Modular');
+console.log('🚀 Iniciando Sistema de Controle de Produção v0.5.4 - Arquitetura Modular');
 
 // === CONFIGURAÇÃO DOS MÓDULOS ===
 const MODULOS = [
@@ -42,7 +42,7 @@ async function carregarModulos() {
     }
     
     console.log('🎉 Todos os módulos carregados com sucesso!');
-    console.log('📊 Arquitetura: JavaScript Modular v5.3');
+    console.log('📊 Arquitetura: JavaScript Modular v0.5.4');
     
     // Verificar se funções essenciais estão disponíveis
     verificarFuncoesEssenciais();
@@ -142,7 +142,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 console.log(`
 ╔══════════════════════════════════════════════════════════════╗
 ║              SISTEMA DE CONTROLE DE PRODUÇÃO                ║
-║                     Versão 5.3 Modular                     ║
+║                     Versão v0.5.4 Modular                     ║
 ╠══════════════════════════════════════════════════════════════╣
 ║ 🏗️ Arquitetura: JavaScript Modular                          ║
 ║ 📦 Módulos: 6 especializados                                ║

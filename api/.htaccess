@@ -1,5 +1,5 @@
 # api/.htaccess - Proteção do Diretório API
-# Sistema de Controle de Produção v5.2
+# Sistema de Controle de Produção v0.5.4
 
 # Negar acesso direto a todos os arquivos do diretório api/
 <Files "*">

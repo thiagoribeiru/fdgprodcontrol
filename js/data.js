@@ -1,4 +1,4 @@
-// js/data.js - Módulo de Carregamento de Dados v5.3
+// js/data.js - Módulo de Carregamento de Dados v0.5.4
 
 // === CARREGAMENTO DE DADOS ===
 async function carregarPedidos() {
@@ -23,15 +23,14 @@ async function carregarPedidos() {
                         <td><strong>${pedido.codigo_pedido}</strong></td>
                         <td>${pedido.cliente}</td>
                         <td>
-                            <span class="status-${pedido.processo_atual}" 
-                                  onclick="alterarProcessoPedido(${pedido.id}, '${pedido.processo_atual}')" 
-                                  title="Clique para avançar processo">
+                            <span class="status-${pedido.processo_atual}" title="Processo atual: ${window.capitalizeFirst(pedido.processo_atual)}">
                                 ${window.capitalizeFirst(pedido.processo_atual)}
                             </span>
                         </td>
                         <td>${pedido.total_itens} item(s)</td>
                         <td>
                             <button class="btn-edit" onclick="verItensPedido(${pedido.id})" title="Ver detalhes">👁️</button>
+                            <button class="btn-edit" onclick="editarPedido(${pedido.id})" title="Editar pedido">✏️</button>
                             <button class="btn-delete" onclick="excluirPedido(${pedido.id})" title="Excluir">🗑️</button>
                         </td>
                     `;
@@ -41,6 +40,63 @@ async function carregarPedidos() {
         }
         console.log(`${data.length} pedidos carregados`);
     }
+}
+
+// === CARREGAMENTO DE ITENS DO PEDIDO PARA EDIÇÃO ===
+async function carregarItensPedidoEdit(pedidoId) {
+    console.log('Carregando itens do pedido para edição:', pedidoId);
+    const data = await window.apiRequest(`${window.API_BASE_URL}?action=get_pedido_itens&pedido_id=${pedidoId}`);
+    
+    if (data && Array.isArray(data)) {
+        const tbody = document.getElementById('editPedidoItensBody');
+        if (tbody) {
+            tbody.innerHTML = '';
+            
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 20px; color: #666;">Nenhum item no pedido</td></tr>';
+            } else {
+                data.forEach(item => {
+                    // Calcular status geral do item baseado nos processos
+                    const statusIcon = getItemStatusIcon(item);
+                    const statusText = getItemStatusText(item);
+                    
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td><strong>${item.item_nome}</strong></td>
+                        <td>${item.quantidade}</td>
+                        <td>${item.observacoes || '-'}</td>
+                        <td>
+                            <span class="item-status ${getItemStatusClass(item)}" title="${statusText}">
+                                ${statusIcon} ${statusText}
+                            </span>
+                        </td>
+                        <td>
+                            <button class="btn-edit" onclick="openEditItemPedidoModal(${item.id}, '${window.escapeString(item.item_nome)}', ${item.quantidade}, '${window.escapeString(item.observacoes || '')}')" title="Editar item">✏️</button>
+                            <button class="btn-delete" onclick="removerItemDoPedidoEdit(${item.id}, '${window.escapeString(item.item_nome)}')" title="Remover item">🗑️</button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            }
+        }
+        console.log(`${data.length} itens do pedido carregados para edição`);
+    }
+}
+
+function getItemStatusIcon(item) {
+    // Lógica para determinar o ícone baseado no progresso dos processos
+    // Isso seria baseado em dados de processo que viriam da API
+    return '📋'; // Placeholder - seria dinâmico baseado no status real
+}
+
+function getItemStatusText(item) {
+    // Lógica para determinar o texto do status
+    return 'Em processamento'; // Placeholder - seria dinâmico
+}
+
+function getItemStatusClass(item) {
+    // Lógica para determinar a classe CSS do status
+    return 'em-processamento'; // Placeholder - seria dinâmico
 }
 
 async function carregarItens() {
@@ -233,6 +289,10 @@ async function carregarProcessosDoItem(itemId) {
 
 // === DISPONIBILIZAR FUNÇÕES GLOBALMENTE ===
 window.carregarPedidos = carregarPedidos;
+window.carregarItensPedidoEdit = carregarItensPedidoEdit;
+window.getItemStatusIcon = getItemStatusIcon;
+window.getItemStatusText = getItemStatusText;
+window.getItemStatusClass = getItemStatusClass;
 window.carregarItens = carregarItens;
 window.carregarItensParaSelecao = carregarItensParaSelecao;
 window.carregarProcessos = carregarProcessos;
@@ -242,4 +302,4 @@ window.adicionarAlertaOrdem = adicionarAlertaOrdem;
 window.criarLinhaProcesso = criarLinhaProcesso;
 window.carregarProcessosDoItem = carregarProcessosDoItem;
 
-console.log('Módulo Data carregado - Carregamento de dados v5.3');
+console.log('Módulo Data carregado - Carregamento de dados v0.5.4');

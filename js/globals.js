@@ -1,4 +1,4 @@
-// js/globals.js - Variáveis Globais e Funções Compartilhadas v5.3
+// js/globals.js - Variáveis Globais e Funções Compartilhadas v0.5.4
 
 // === VARIÁVEIS GLOBAIS ===
 window.pedidoItens = window.pedidoItens || [];
@@ -177,4 +177,4 @@ window.limparFormularioPedido = function() {
     }
 };
 
-console.log('Módulo Globals carregado - Variáveis globais e funções compartilhadas v5.3');
+console.log('Módulo Globals carregado - Variáveis globais e funções compartilhadas v0.5.4');

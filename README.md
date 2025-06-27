@@ -1,10 +1,10 @@
-# 🏭 Sistema de Controle de Produção v5.3
+# 🏭 Sistema de Controle de Produção v0.5.4
 
 ## 📋 Sobre o Sistema
 
 Sistema completo para gestão e controle de produção industrial, desenvolvido com **arquitetura modular** tanto no **JavaScript** quanto no **CSS**, oferecendo máxima eficiência, manutenibilidade e escalabilidade.
 
-### 🚀 **Principais Características v5.3**
+### 🚀 **Principais Características v0.5.4**
 - **API PHP Modularizada** com 5 módulos especializados
 - **JavaScript Modular** com 6 módulos independentes  
 - **CSS Modular** com 11 arquivos especializados
@@ -16,7 +16,7 @@ Sistema completo para gestão e controle de produção industrial, desenvolvido 
 ## 📁 Estrutura Completa do Projeto
 
 ```
-📦 Sistema de Controle de Produção v5.3
+📦 Sistema de Controle de Produção v0.5.4
 ├── 🌐 api/                           # API PHP Modularizada
 │   ├── pedidos.php                   # 📦 Gestão de Pedidos
 │   ├── itens.php                     # 🏷️ Gestão de Itens  
@@ -63,7 +63,7 @@ Sistema completo para gestão e controle de produção industrial, desenvolvido 
 └── 📖 README.md                      # Esta documentação
 ```
 
-## 🏗️ Arquitetura do Sistema v5.3
+## 🏗️ Arquitetura do Sistema v0.5.4
 
 ### 🌐 **API PHP Modularizada**
 ```php
@@ -153,10 +153,11 @@ $config_database = [
 
 ### 📦 **Gestão de Pedidos**
 - ✅ **CRUD Completo** - Criar, visualizar, editar, excluir
-- ✅ **Controle de Status** - Acompanhamento por processo
+- ✅ **Controle de Status** - Visualização do processo atual (não clicável)
 - ✅ **Múltiplos Itens** - Pedidos com vários produtos
 - ✅ **Progresso Visual** - Barra de progresso em tempo real
 - ✅ **Datas de Entrega** - Controle de prazos
+- ✅ **Edição Avançada** - Modal dedicado para modificações completas
 
 ### 🏷️ **Gestão de Itens**
 - ✅ **Cadastro de Produtos** - Nome, descrição, processos
@@ -175,6 +176,7 @@ $config_database = [
 - ✅ **Agrupamento Inteligente** - Processos agrupados por ordem global
 - ✅ **Progresso Geral** - Percentual de conclusão do pedido
 - ✅ **Histórico Completo** - Datas de início e conclusão
+- ✅ **Interface Otimizada** - Modal de detalhes e edição separados
 
 ## 🎨 Interface do Usuário
 
@@ -185,10 +187,11 @@ $config_database = [
 - **Responsividade Total** para todos os dispositivos
 
 ### 👨‍💼 **Painel Administrativo (adm.html)**
-- **Tabela de Pedidos** com status coloridos
+- **Tabela de Pedidos** com status informativos (não clicáveis)
 - **Modais Avançados** para formulários
 - **Sistema de Tabs** para organização
 - **Ações Rápidas** com confirmações
+- **Navegação Fluida** entre visualização e edição
 
 ### 📱 **Responsividade Completa**
 - **Mobile First** - Otimizado para dispositivos móveis
@@ -321,8 +324,8 @@ header('X-XSS-Protection: 1; mode=block');
 - ✅ **Query Optimization** - Consultas eficientes
 
 ### 📊 **Métricas de Performance**
-| Métrica | v5.2 (Monolítico) | v5.3 (Modular) | Melhoria |
-|---------|-------------------|-----------------|----------|
+| Métrica | Monolítico | Modular | Melhoria |
+|---------|------------|---------|----------|
 | **JS Principal** | 2000+ linhas | ~100 linhas | **95% redução** |
 | **CSS Principal** | 2000+ linhas | ~50 linhas | **97% redução** |
 | **Módulos** | 2 monolíticos | 22 especializados | **1000% modularização** |
@@ -404,10 +407,16 @@ tail -f logs/api_errors.log
 ## 🔄 Versionamento
 
 ### 📋 **Histórico de Versões**
-- **v5.3** - Arquitetura Modular Completa (CSS + JS + API)
-- **v5.2** - API Modularizada
-- **v5.1** - Sistema Base com Acompanhamento
-- **v5.0** - Lançamento Inicial
+- **v0.5.4** - Interface otimizada e processo não clicável
+- **v0.5.3** - Modals com z-index corrigido e padding consistente
+- **v0.5.2** - Arquitetura Modular Completa (CSS + JS + API)
+- **v0.5.1** - API Modularizada
+- **v0.5.0** - Sistema Base com Acompanhamento
+
+### 🎯 **Convenção de Versionamento**
+- **Primeiro número (0):** Versão de produção (ainda em desenvolvimento)
+- **Segundo número (.5):** Versão da etapa/módulo de desenvolvimento
+- **Terceiro número (.4):** Correções e atualizações pequenas
 
 ## 🎯 **Compatibilidade Testada**
 - **Sistemas**: Windows, Linux, macOS
@@ -435,7 +444,7 @@ tail -f logs/api_errors.log
 # 4. Pronto para usar!
 ```
 
-**Sistema de Controle de Produção v5.3**  
+**Sistema de Controle de Produção v0.5.4**  
 *Arquitetura Modular - Máxima Eficiência e Manutenibilidade*
 
 ---

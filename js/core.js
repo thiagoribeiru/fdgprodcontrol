@@ -1,4 +1,4 @@
-// js/core.js - Módulo Principal do Sistema de Controle de Produção v5.3
+// js/core.js - Módulo Principal do Sistema de Controle de Produção v0.5.4
 
 async function inicializarSistema() {
     try {
@@ -48,6 +48,8 @@ async function testarAPI() {
 function configurarEventos() {
     const formularios = [
         { id: 'addPedidoForm', handler: window.salvarPedido },
+        { id: 'editPedidoForm', handler: window.atualizarPedido },
+        { id: 'editItemPedidoForm', handler: window.editarItemPedido },
         { id: 'addItemForm', handler: window.salvarItem },
         { id: 'addItemToPedidoForm', handler: window.adicionarItemAoPedido },
         { id: 'addItemProcessoForm', handler: window.adicionarProcessoAoItem },
@@ -58,6 +60,8 @@ function configurarEventos() {
     formularios.forEach(form => {
         const element = document.getElementById(form.id);
         if (element) {
+            // Remover listeners existentes para evitar duplicação
+            element.removeEventListener('submit', handleFormSubmit);
             element.addEventListener('submit', function(e) {
                 e.preventDefault();
                 if (typeof form.handler === 'function') {
@@ -71,6 +75,11 @@ function configurarEventos() {
     setTimeout(() => {
         configurarEventosOrdem();
     }, 1000);
+}
+
+function handleFormSubmit(e) {
+    e.preventDefault();
+    // Esta função é apenas para garantir que o listener seja removido corretamente
 }
 
 function configurarEventosOrdem() {
@@ -98,6 +107,16 @@ window.onclick = function(event) {
     modais.forEach(modal => {
         if (event.target === modal) {
             modal.style.display = 'none';
+            
+            // Limpeza específica para modal de edição de pedido
+            if (modal.id === 'editPedidoModal') {
+                // Restaurar função original se estava em modo de edição
+                if (window.isEditMode && window.originalAddItemToPedido) {
+                    window.adicionarItemAoPedido = window.originalAddItemToPedido;
+                    delete window.originalAddItemToPedido;
+                    delete window.isEditMode;
+                }
+            }
         }
     });
 };
@@ -107,6 +126,16 @@ document.addEventListener('keydown', function(event) {
         const modaisAbertos = document.querySelectorAll('.modal[style*="block"]');
         modaisAbertos.forEach(modal => {
             modal.style.display = 'none';
+            
+            // Limpeza específica para modal de edição de pedido
+            if (modal.id === 'editPedidoModal') {
+                // Restaurar função original se estava em modo de edição
+                if (window.isEditMode && window.originalAddItemToPedido) {
+                    window.adicionarItemAoPedido = window.originalAddItemToPedido;
+                    delete window.originalAddItemToPedido;
+                    delete window.isEditMode;
+                }
+            }
         });
     }
 });
@@ -117,4 +146,4 @@ window.testarAPI = testarAPI;
 window.configurarEventos = configurarEventos;
 window.configurarEventosOrdem = configurarEventosOrdem;
 
-console.log('Módulo Core carregado - Sistema v5.3 Modular');
+console.log('Módulo Core carregado - Sistema v0.5.4 Modular');

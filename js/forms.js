@@ -1,4 +1,4 @@
-// js/forms.js - Módulo de Salvamento e Formulários v5.3
+// js/forms.js - Módulo de Salvamento e Formulários v0.5.4
 
 // === FUNÇÕES DE SALVAMENTO ===
 async function salvarPedido() {
@@ -25,6 +25,40 @@ async function salvarPedido() {
         window.carregarPedidos();
     } else {
         window.mostrarMensagem(resultado?.error || 'Erro ao salvar pedido', 'error');
+    }
+}
+
+async function atualizarPedido() {
+    console.log('Atualizando pedido...');
+    const pedidoId = document.getElementById('editPedidoId').value;
+    const formData = new FormData(document.getElementById('editPedidoForm'));
+    
+    const pedidoData = {
+        data_entrada: formData.get('dataEntrada'),
+        data_entrega: formData.get('dataEntrega'),
+        codigo_pedido: formData.get('codigoPedido'),
+        cliente: formData.get('cliente'),
+        processo_atual: formData.get('processoAtual')
+    };
+    
+    const resultado = await window.apiRequest(`${window.API_BASE_URL}?action=update_pedido&id=${pedidoId}`, {
+        method: 'PUT',
+        body: JSON.stringify(pedidoData)
+    });
+    
+    if (resultado && resultado.success) {
+        window.mostrarMensagem('Pedido atualizado com sucesso!', 'success');
+        window.closeEditPedidoModal();
+        window.carregarPedidos();
+        
+        // Se o modal de detalhes estava aberto, recarregar
+        const modalDetalhes = document.getElementById('viewDetalhePedidoModal');
+        if (modalDetalhes) {
+            modalDetalhes.remove();
+            setTimeout(() => window.verItensPedido(pedidoId), 300);
+        }
+    } else {
+        window.mostrarMensagem(resultado?.error || 'Erro ao atualizar pedido', 'error');
     }
 }
 
@@ -120,7 +154,22 @@ async function atualizarProcesso() {
     }
 }
 
+// === FUNÇÕES DE ADIÇÃO DE ITENS ===
 function adicionarItemAoPedido() {
+    // Verificar se estamos no modo de edição de pedido
+    const editPedidoModal = document.getElementById('editPedidoModal');
+    const isEditMode = editPedidoModal && editPedidoModal.style.display === 'block';
+    
+    if (isEditMode) {
+        // Se estamos editando um pedido, usar a função de edição
+        adicionarItemAoPedidoEdit();
+    } else {
+        // Se estamos criando um pedido novo, usar a função original
+        adicionarItemAoPedidoNovo();
+    }
+}
+
+function adicionarItemAoPedidoNovo() {
     const formData = new FormData(document.getElementById('addItemToPedidoForm'));
     const itemId = document.getElementById('selectedItemId').value;
     const itemNome = document.getElementById('selectedItemName').textContent.replace('Item: ', '');
@@ -132,18 +181,92 @@ function adicionarItemAoPedido() {
         observacoes: formData.get('observacoes')
     };
     
-    const itemExistente = pedidoItens.find(item => item.item_id === novoItem.item_id);
+    const itemExistente = window.pedidoItens.find(item => item.item_id === novoItem.item_id);
     if (itemExistente) {
-        mostrarMensagem('Este item já foi adicionado ao pedido', 'error');
+        window.mostrarMensagem('Este item já foi adicionado ao pedido', 'error');
         return;
     }
     
-    pedidoItens.push(novoItem);
-    atualizarTabelaItensPedido();
-    closeAddItemToPedidoModal();
-    closeSelectItemModal();
+    window.pedidoItens.push(novoItem);
+    window.atualizarTabelaItensPedido();
+    window.closeAddItemToPedidoModal();
+    window.closeSelectItemModal();
     
-    console.log('Item adicionado ao pedido:', novoItem);
+    console.log('Item adicionado ao pedido (novo):', novoItem);
+}
+
+// === FUNÇÕES DE EDIÇÃO DE ITENS DO PEDIDO ===
+async function adicionarItemAoPedidoEdit() {
+    const pedidoId = document.getElementById('editPedidoId').value;
+    const formData = new FormData(document.getElementById('addItemToPedidoForm'));
+    const itemId = document.getElementById('selectedItemId').value;
+    
+    const itemData = {
+        pedido_id: parseInt(pedidoId),
+        item_id: parseInt(itemId),
+        quantidade: parseInt(formData.get('quantidade')),
+        observacoes: formData.get('observacoes')
+    };
+    
+    console.log('Adicionando item ao pedido via API:', itemData);
+    
+    const resultado = await window.apiRequest(`${window.API_BASE_URL}?action=add_item_to_pedido`, {
+        method: 'POST',
+        body: JSON.stringify(itemData)
+    });
+    
+    if (resultado && resultado.success) {
+        window.mostrarMensagem('Item adicionado ao pedido com sucesso!', 'success');
+        window.closeAddItemToPedidoModal();
+        window.closeSelectItemModal();
+        
+        // Recarregar a lista de itens do pedido
+        await window.carregarItensPedidoEdit(pedidoId);
+    } else {
+        window.mostrarMensagem(resultado?.error || 'Erro ao adicionar item', 'error');
+    }
+}
+
+async function editarItemPedido() {
+    const pedidoItemId = document.getElementById('editItemPedidoId').value;
+    const formData = new FormData(document.getElementById('editItemPedidoForm'));
+    
+    const itemData = {
+        quantidade: parseInt(formData.get('quantidade')),
+        observacoes: formData.get('observacoes')
+    };
+    
+    const resultado = await window.apiRequest(`${window.API_BASE_URL}?action=update_pedido_item&id=${pedidoItemId}`, {
+        method: 'PUT',
+        body: JSON.stringify(itemData)
+    });
+    
+    if (resultado && resultado.success) {
+        window.mostrarMensagem('Item atualizado com sucesso!', 'success');
+        window.closeEditItemPedidoModal();
+        const pedidoId = document.getElementById('editPedidoId').value;
+        await window.carregarItensPedidoEdit(pedidoId);
+    } else {
+        window.mostrarMensagem(resultado?.error || 'Erro ao atualizar item', 'error');
+    }
+}
+
+async function removerItemDoPedidoEdit(pedidoItemId, itemNome) {
+    if (!confirm(`Tem certeza que deseja remover "${itemNome}" deste pedido?\n\nAtenção: Isso irá remover também todo o progresso dos processos deste item!`)) {
+        return;
+    }
+    
+    const resultado = await window.apiRequest(`${window.API_BASE_URL}?action=remove_item_from_pedido&id=${pedidoItemId}`, {
+        method: 'DELETE'
+    });
+    
+    if (resultado && resultado.success) {
+        window.mostrarMensagem('Item removido do pedido com sucesso!', 'success');
+        const pedidoId = document.getElementById('editPedidoId').value;
+        await window.carregarItensPedidoEdit(pedidoId);
+    } else {
+        window.mostrarMensagem(resultado?.error || 'Erro ao remover item', 'error');
+    }
 }
 
 async function adicionarProcessoAoItem() {
@@ -157,17 +280,17 @@ async function adicionarProcessoAoItem() {
         observacoes: formData.get('observacoes') || ''
     };
     
-    const resultado = await apiRequest(`${API_BASE_URL}?action=add_item_processo`, {
+    const resultado = await window.apiRequest(`${window.API_BASE_URL}?action=add_item_processo`, {
         method: 'POST',
         body: JSON.stringify(processoData)
     });
     
     if (resultado && resultado.success) {
-        mostrarMensagem(resultado.message || 'Processo adicionado com sucesso!', 'success');
+        window.mostrarMensagem(resultado.message || 'Processo adicionado com sucesso!', 'success');
         document.getElementById('addItemProcessoForm').reset();
-        carregarProcessosDoItem(itemId);
+        window.carregarProcessosDoItem(itemId);
     } else {
-        mostrarMensagem(resultado?.error || 'Erro ao adicionar processo', 'error');
+        window.mostrarMensagem(resultado?.error || 'Erro ao adicionar processo', 'error');
     }
 }
 
@@ -177,7 +300,7 @@ async function salvarItemEmPedidoExistente() {
     const quantidade = document.getElementById('existenteItemQuantidade').value;
     const observacoes = document.getElementById('existenteItemObservacoes').value;
     
-    const resultado = await apiRequest(`${API_BASE_URL}?action=add_item_to_pedido`, {
+    const resultado = await window.apiRequest(`${window.API_BASE_URL}?action=add_item_to_pedido`, {
         method: 'POST',
         body: JSON.stringify({
             pedido_id: parseInt(pedidoId),
@@ -188,24 +311,24 @@ async function salvarItemEmPedidoExistente() {
     });
     
     if (resultado && resultado.success) {
-        mostrarMensagem('Item adicionado ao pedido com sucesso!', 'success');
-        closeAddItemToPedidoExistenteModal();
-        setTimeout(() => verItensPedido(pedidoId), 500);
+        window.mostrarMensagem('Item adicionado ao pedido com sucesso!', 'success');
+        window.closeAddItemToPedidoExistenteModal();
+        setTimeout(() => window.verItensPedido(pedidoId), 500);
     } else {
-        mostrarMensagem(resultado?.error || 'Erro ao adicionar item', 'error');
+        window.mostrarMensagem(resultado?.error || 'Erro ao adicionar item', 'error');
     }
 }
 
 // === VALIDAÇÕES ===
 function validarProcesso(processoData, isEdit = false) {
     if (!processoData.nome || processoData.nome.trim() === '') {
-        mostrarMensagem('Nome do processo é obrigatório', 'error');
+        window.mostrarMensagem('Nome do processo é obrigatório', 'error');
         return false;
     }
     
     if (isEdit || processoData.ordem !== null) {
         if (processoData.ordem < 1 || !Number.isInteger(processoData.ordem)) {
-            mostrarMensagem('Ordem deve ser um número inteiro positivo', 'error');
+            window.mostrarMensagem('Ordem deve ser um número inteiro positivo', 'error');
             return false;
         }
     }
@@ -234,14 +357,14 @@ async function processarResultadoProcesso(resultado, acao) {
         console.log(`Reorganização no ${acao}:`, resultado);
     }
     
-    mostrarMensagem(mensagem, 'success');
+    window.mostrarMensagem(mensagem, 'success');
     
-    await carregarProcessosList();
-    await carregarProcessos();
+    await window.carregarProcessosList();
+    await window.carregarProcessos();
     
     if (resultado.reorganizacao) {
         setTimeout(() => {
-            mostrarMensagemReorganizacao(resultado);
+            window.mostrarMensagemReorganizacao(resultado);
         }, 2000);
     }
 }
@@ -251,9 +374,9 @@ function limparFormularioPedido() {
     const form = document.getElementById('addPedidoForm');
     if (form) {
         form.reset();
-        pedidoItens = [];
-        atualizarTabelaItensPedido();
-        configurarDataPadrao();
+        window.pedidoItens = [];
+        window.atualizarTabelaItensPedido();
+        window.configurarDataPadrao();
     }
 }
 
@@ -262,10 +385,10 @@ function atualizarTabelaItensPedido() {
     if (tbody) {
         tbody.innerHTML = '';
         
-        if (pedidoItens.length === 0) {
+        if (window.pedidoItens.length === 0) {
             tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 20px; color: #666;">Nenhum item adicionado</td></tr>';
         } else {
-            pedidoItens.forEach((item, index) => {
+            window.pedidoItens.forEach((item, index) => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td><strong>${item.item_nome}</strong></td>
@@ -282,9 +405,30 @@ function atualizarTabelaItensPedido() {
 }
 
 function removerItemDoPedido(index) {
-    pedidoItens.splice(index, 1);
+    window.pedidoItens.splice(index, 1);
     atualizarTabelaItensPedido();
-    console.log('Item removido do pedido, restam:', pedidoItens.length);
+    console.log('Item removido do pedido, restam:', window.pedidoItens.length);
 }
 
-console.log('Módulo Forms carregado - Salvamento e formulários v5.3');
+// === DISPONIBILIZAR FUNÇÕES GLOBALMENTE ===
+window.salvarPedido = salvarPedido;
+window.atualizarPedido = atualizarPedido;
+window.salvarItem = salvarItem;
+window.salvarProcesso = salvarProcesso;
+window.atualizarProcesso = atualizarProcesso;
+window.adicionarItemAoPedido = adicionarItemAoPedido;
+window.adicionarItemAoPedidoNovo = adicionarItemAoPedidoNovo;
+window.adicionarItemAoPedidoEdit = adicionarItemAoPedidoEdit;
+window.editarItemPedido = editarItemPedido;
+window.removerItemDoPedidoEdit = removerItemDoPedidoEdit;
+window.adicionarProcessoAoItem = adicionarProcessoAoItem;
+window.salvarItemEmPedidoExistente = salvarItemEmPedidoExistente;
+window.validarProcesso = validarProcesso;
+window.confirmarReorganizacao = confirmarReorganizacao;
+window.confirmarReorganizacaoEdicao = confirmarReorganizacaoEdicao;
+window.processarResultadoProcesso = processarResultadoProcesso;
+window.limparFormularioPedido = limparFormularioPedido;
+window.atualizarTabelaItensPedido = atualizarTabelaItensPedido;
+window.removerItemDoPedido = removerItemDoPedido;
+
+console.log('Módulo Forms carregado - Salvamento e formulários v0.5.4');

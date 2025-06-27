@@ -1,4 +1,4 @@
-// js/actions.js - Módulo de Ações e Manipulações v5.3
+// js/actions.js - Módulo de Ações e Manipulações v0.5.4
 
 // === GERENCIAMENTO DE TABS ===
 function showTab(tabName) {
@@ -141,8 +141,23 @@ async function alterarProcessoPedido(pedidoId, processoAtual) {
     }
 }
 
-function editarPedido(pedidoId) {
-    window.mostrarMensagem('Funcionalidade de edição em desenvolvimento', 'error');
+async function editarPedido(pedidoId) {
+    console.log('Editando pedido:', pedidoId);
+    
+    // Buscar dados do pedido
+    const data = await window.apiRequest(`${window.API_BASE_URL}?action=get_pedidos`);
+    
+    if (data && Array.isArray(data)) {
+        const pedido = data.find(p => p.id == pedidoId);
+        
+        if (pedido) {
+            window.openEditPedidoModal(pedido);
+        } else {
+            window.mostrarMensagem('Pedido não encontrado', 'error');
+        }
+    } else {
+        window.mostrarMensagem('Erro ao carregar dados do pedido', 'error');
+    }
 }
 
 // === ADIÇÃO DE ITENS A PEDIDOS EXISTENTES ===
@@ -328,4 +343,4 @@ window.verificarOrdemProcessos = verificarOrdemProcessos;
 window.corrigirOrdemProcessos = corrigirOrdemProcessos;
 window.atualizarResultadoVerificacao = atualizarResultadoVerificacao;
 
-console.log('Módulo Actions carregado - Ações e manipulações v5.3');
+console.log('Módulo Actions carregado - Ações e manipulações v0.5.4');

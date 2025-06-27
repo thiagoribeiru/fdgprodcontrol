@@ -156,6 +156,14 @@ function updatePedido($pdo) {
             jsonResponse(['error' => 'Código do pedido já existe'], 400);
         }
         
+        // Verificar se o pedido existe
+        $stmt = $pdo->prepare("SELECT id FROM pedidos WHERE id = ?");
+        $stmt->execute([$pedido_id]);
+        if (!$stmt->fetch()) {
+            jsonResponse(['error' => 'Pedido não encontrado'], 404);
+        }
+        
+        // Atualizar o pedido
         $stmt = $pdo->prepare("
             UPDATE pedidos 
             SET data_entrada = ?, data_entrega = ?, codigo_pedido = ?, cliente = ?, processo_atual = ?
@@ -171,15 +179,11 @@ function updatePedido($pdo) {
             $pedido_id
         ]);
         
-        if ($stmt->rowCount() === 0) {
-            jsonResponse(['error' => 'Pedido não encontrado'], 404);
-        }
-        
-        jsonResponse(['success' => true]);
+        jsonResponse(['success' => true, 'message' => 'Pedido atualizado com sucesso']);
         
     } catch (Exception $e) {
         logError("updatePedido: " . $e->getMessage());
-        jsonResponse(['error' => 'Erro ao atualizar pedido'], 500);
+        jsonResponse(['error' => 'Erro ao atualizar pedido: ' . $e->getMessage()], 500);
     }
 }
 

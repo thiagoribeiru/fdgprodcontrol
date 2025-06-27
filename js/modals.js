@@ -1,4 +1,4 @@
-// js/modals.js - Módulo de Gerenciamento de Modais v5.3
+// js/modals.js - Módulo de Gerenciamento de Modais v0.5.4
 
 // === GERENCIAMENTO DE MODAIS ===
 const modais = {
@@ -9,6 +9,9 @@ const modais = {
                 window.limparFormularioPedido();
             }
         }
+    },
+    editPedido: { 
+        element: 'editPedidoModal' 
     },
     selectItem: { 
         element: 'selectItemModal', 
@@ -80,6 +83,73 @@ function closeItensModal() { closeModal('itens'); }
 function openProcessosModal() { openModal('processos'); }
 function closeProcessosModal() { closeModal('processos'); }
 
+// === MODAL DE EDIÇÃO DE PEDIDO ===
+async function openEditPedidoModal(pedido) {
+    // Fechar modal de detalhes se estiver aberto
+    const detalhesModal = document.getElementById('viewDetalhePedidoModal');
+    if (detalhesModal) {
+        detalhesModal.remove();
+    }
+    
+    const modal = document.getElementById('editPedidoModal');
+    if (modal) {
+        // Preencher os campos do formulário
+        document.getElementById('editPedidoId').value = pedido.id;
+        document.getElementById('editDataEntrada').value = pedido.data_entrada;
+        document.getElementById('editDataEntrega').value = pedido.data_entrega;
+        document.getElementById('editCodigoPedido').value = pedido.codigo_pedido;
+        document.getElementById('editCliente').value = pedido.cliente;
+        document.getElementById('editProcessoAtual').value = pedido.processo_atual;
+        
+        // Carregar itens do pedido
+        await window.carregarItensPedidoEdit(pedido.id);
+        
+        modal.style.display = 'block';
+    }
+}
+
+function closeEditPedidoModal() {
+    const modal = document.getElementById('editPedidoModal');
+    if (modal) {
+        modal.style.display = 'none';
+        document.getElementById('editPedidoForm').reset();
+        
+        // Limpar tabela de itens
+        const tbody = document.getElementById('editPedidoItensBody');
+        if (tbody) {
+            tbody.innerHTML = '';
+        }
+    }
+}
+
+// === MODAL DE SELEÇÃO DE ITENS PARA EDIÇÃO ===
+function openSelectItemModalEdit() {
+    window.isEditMode = true;
+    window.originalAddItemToPedido = window.adicionarItemAoPedido;
+    window.adicionarItemAoPedido = window.adicionarItemAoPedidoEdit;
+    openSelectItemModal();
+}
+
+// === MODAL DE EDIÇÃO DE ITEM DO PEDIDO ===
+function openEditItemPedidoModal(pedidoItemId, itemNome, quantidade, observacoes) {
+    const modal = document.getElementById('editItemPedidoModal');
+    if (modal) {
+        document.getElementById('editItemPedidoId').value = pedidoItemId;
+        document.getElementById('editItemPedidoNome').textContent = `Item: ${itemNome}`;
+        document.getElementById('editItemQuantidade').value = quantidade;
+        document.getElementById('editItemObservacoes').value = observacoes || '';
+        modal.style.display = 'block';
+    }
+}
+
+function closeEditItemPedidoModal() {
+    const modal = document.getElementById('editItemPedidoModal');
+    if (modal) {
+        modal.style.display = 'none';
+        document.getElementById('editItemPedidoForm').reset();
+    }
+}
+
 function openAddItemToPedidoModal(itemId, itemNome) {
     const modal = document.getElementById('addItemToPedidoModal');
     if (modal) {
@@ -95,6 +165,13 @@ function closeAddItemToPedidoModal() {
         modal.style.display = 'none';
         const form = document.getElementById('addItemToPedidoForm');
         if (form) form.reset();
+        
+        // Restaurar função original se estava em modo de edição
+        if (window.isEditMode && window.originalAddItemToPedido) {
+            window.adicionarItemAoPedido = window.originalAddItemToPedido;
+            delete window.originalAddItemToPedido;
+            delete window.isEditMode;
+        }
     }
 }
 
@@ -123,7 +200,7 @@ function openItemProcessosModal(itemId, itemNome) {
         document.getElementById('currentItemId').value = itemId;
         document.getElementById('itemProcessosTitle').textContent = `Processos do Item: ${itemNome}`;
         modal.style.display = 'block';
-        carregarProcessosDoItem(itemId);
+        window.carregarProcessosDoItem(itemId);
     }
 }
 
@@ -138,7 +215,7 @@ function closeItemProcessosModal() {
 // === MODAL DE REORGANIZAÇÃO ===
 function mostrarMensagemReorganizacao(resultado) {
     const modalHtml = `
-        <div id="reorganizacaoModal" class="modal" style="display: block;">
+        <div id="reorganizacaoModal" class="modal" style="display: block; z-index: 1050;">
             <div class="modal-content small">
                 <div class="modal-header" style="background: linear-gradient(135deg, #2196F3, #1976D2);">
                     <h2>🔄 Reorganização Automática</h2>
@@ -187,10 +264,10 @@ async function criarModalDetalhePedido(data) {
     const pedido = data.pedido;
     const processos = data.processos || [];
     
-    const processosAgrupados = await agruparProcessosPorOrdemGlobal(processos);
+    const processosAgrupados = await window.agruparProcessosPorOrdemGlobal(processos);
     
     const modalHtml = `
-        <div id="viewDetalhePedidoModal" class="modal" style="display: block;">
+        <div id="viewDetalhePedidoModal" class="modal" style="display: block; z-index: 1010;">
             <div class="modal-content large">
                 <div class="modal-header">
                     <h2>Detalhes do Pedido: ${pedido.codigo_pedido}</h2>
@@ -205,15 +282,15 @@ async function criarModalDetalhePedido(data) {
                         </div>
                         <div class="info-card">
                             <label>Entrada</label>
-                            <span>${formatarData(pedido.data_entrada)}</span>
+                            <span>${window.formatarData(pedido.data_entrada)}</span>
                         </div>
                         <div class="info-card">
                             <label>Entrega</label>
-                            <span>${formatarData(pedido.data_entrega)}</span>
+                            <span>${window.formatarData(pedido.data_entrega)}</span>
                         </div>
                         <div class="info-card">
                             <label>Status</label>
-                            <span class="status-${pedido.processo_atual}">${capitalizeFirst(pedido.processo_atual)}</span>
+                            <span class="status-${pedido.processo_atual}">${window.capitalizeFirst(pedido.processo_atual)}</span>
                         </div>
                     </div>
                     
@@ -230,8 +307,7 @@ async function criarModalDetalhePedido(data) {
                             </div>
                         </div>
                         <div class="actions-compact">
-                            <button class="btn-edit" onclick="editarPedido(${pedido.id})">✏️ Editar</button>
-                            <button class="btn-edit" onclick="adicionarItemAoPedidoExistente(${pedido.id})">➕ Item</button>
+                            <button class="btn-edit" onclick="editarPedidoFromDetails(${pedido.id})">✏️ Editar Pedido</button>
                         </div>
                     </div>
                 </div>
@@ -242,7 +318,7 @@ async function criarModalDetalhePedido(data) {
                         <small>🌐 <strong>Ordem Global:</strong> Processos ordenados conforme a sequência padrão da empresa. Itens que não passam por determinado processo não aparecem naquele grupo.</small>
                     </div>
                     <div class="processos-lista">
-                        ${renderizarProcessosAgrupados(processosAgrupados)}
+                        ${window.renderizarProcessosAgrupados(processosAgrupados)}
                     </div>
                 </div>
             </div>
@@ -259,10 +335,30 @@ function closeViewDetalhePedidoModal() {
     }
 }
 
+// === FUNÇÃO ESPECÍFICA PARA EDITAR PEDIDO A PARTIR DOS DETALHES ===
+async function editarPedidoFromDetails(pedidoId) {
+    console.log('Editando pedido a partir dos detalhes:', pedidoId);
+    
+    // Buscar dados do pedido
+    const data = await window.apiRequest(`${window.API_BASE_URL}?action=get_pedidos`);
+    
+    if (data && Array.isArray(data)) {
+        const pedido = data.find(p => p.id == pedidoId);
+        
+        if (pedido) {
+            await window.openEditPedidoModal(pedido);
+        } else {
+            window.mostrarMensagem('Pedido não encontrado', 'error');
+        }
+    } else {
+        window.mostrarMensagem('Erro ao carregar dados do pedido', 'error');
+    }
+}
+
 // === MODAIS DE PEDIDOS EXISTENTES ===
 function openAddItemToPedidoExistenteModal(itemId, itemNome, pedidoId) {
     const modalHtml = `
-        <div id="addItemToPedidoExistenteModal" class="modal" style="display: block;">
+        <div id="addItemToPedidoExistenteModal" class="modal" style="display: block; z-index: 1040;">
             <div class="modal-content small">
                 <div class="modal-header">
                     <h2>Adicionar Item ao Pedido</h2>
@@ -296,7 +392,7 @@ function openAddItemToPedidoExistenteModal(itemId, itemNome, pedidoId) {
     
     document.getElementById('addItemToPedidoExistenteForm').addEventListener('submit', async function(e) {
         e.preventDefault();
-        await salvarItemEmPedidoExistente();
+        await window.salvarItemEmPedidoExistente();
     });
 }
 
@@ -311,7 +407,6 @@ function closeAddItemToPedidoExistenteModal() {
         delete window.originalOpenAddItemToPedidoModal;
         delete window.tempPedidoId;
     }
-    
 }
 
 // === DISPONIBILIZAR FUNÇÕES GLOBALMENTE ===
@@ -319,8 +414,13 @@ window.openModal = openModal;
 window.closeModal = closeModal;
 window.openAddPedidoModal = openAddPedidoModal;
 window.closeAddPedidoModal = closeAddPedidoModal;
+window.openEditPedidoModal = openEditPedidoModal;
+window.closeEditPedidoModal = closeEditPedidoModal;
 window.openSelectItemModal = openSelectItemModal;
+window.openSelectItemModalEdit = openSelectItemModalEdit;
 window.closeSelectItemModal = closeSelectItemModal;
+window.openEditItemPedidoModal = openEditItemPedidoModal;
+window.closeEditItemPedidoModal = closeEditItemPedidoModal;
 window.openItensModal = openItensModal;
 window.closeItensModal = closeItensModal;
 window.openProcessosModal = openProcessosModal;
@@ -335,7 +435,8 @@ window.mostrarMensagemReorganizacao = mostrarMensagemReorganizacao;
 window.closeReorganizacaoModal = closeReorganizacaoModal;
 window.criarModalDetalhePedido = criarModalDetalhePedido;
 window.closeViewDetalhePedidoModal = closeViewDetalhePedidoModal;
+window.editarPedidoFromDetails = editarPedidoFromDetails;
 window.openAddItemToPedidoExistenteModal = openAddItemToPedidoExistenteModal;
 window.closeAddItemToPedidoExistenteModal = closeAddItemToPedidoExistenteModal;
 
-console.log('Módulo Modals carregado - Gerenciamento de modais v5.3');
+console.log('Módulo Modals carregado - Gerenciamento de modais v0.5.4');

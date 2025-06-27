@@ -1,4 +1,4 @@
-/* css/modals.css - Modais e Overlays v5.3 */
+/* css/modals.css - Modais e Overlays v0.5.4 */
 
 /* === MODAL BASE === */
 .modal {
@@ -93,6 +93,23 @@
     transform: rotate(90deg);
 }
 
+/* === MODAL BODY - PADDING PADRONIZADO === */
+.modal-content form,
+.modal-content > div:not(.modal-header):not(.modal-footer) {
+    padding: 25px;
+}
+
+/* Exceções específicas para elementos que já têm padding próprio */
+.pedido-info-compact,
+.processos-acompanhamento,
+.tab-content {
+    padding: 25px;
+}
+
+.tab-content.active {
+    padding: 25px;
+}
+
 /* === MODAL FOOTER === */
 .modal-footer {
     padding: 20px 25px;
@@ -129,6 +146,10 @@
 }
 
 #addPedidoModal {
+    z-index: 1005;
+}
+
+#editPedidoModal {
     z-index: 1005;
 }
 

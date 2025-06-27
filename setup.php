@@ -1,5 +1,5 @@
 <?php
-// setup.php - Instalador do Sistema de Controle de Produção v5.2
+// setup.php - Instalador do Sistema de Controle de Produção v0.5.4
 
 // Verificar se o sistema já foi instalado
 if (file_exists(__DIR__ . '/.installed')) {
@@ -60,7 +60,7 @@ function processInstallation($post_data) {
         createConfigFile($config);
         
         // Marcar como instalado
-        file_put_contents(__DIR__ . '/.installed', date('Y-m-d H:i:s') . ' - v5.2 API Modularizada');
+        file_put_contents(__DIR__ . '/.installed', date('Y-m-d H:i:s') . ' - v0.5.4 API Modularizada');
         
         // Sucesso
         showSuccessPage();
@@ -96,7 +96,7 @@ function createDirectoryStructure() {
 function createAPIStructure() {
     // Criar arquivo .htaccess de proteção
     $htaccess_content = "# api/.htaccess - Proteção do Diretório API
-# Sistema de Controle de Produção v5.2
+# Sistema de Controle de Produção v0.5.4
 
 # Negar acesso direto a todos os arquivos do diretório api/
 <Files \"*\">
@@ -128,7 +128,7 @@ Options -Indexes
 // Este arquivo é criado automaticamente pelo instalador
 
 return [
-    'version' => '5.2',
+    'version' => '0.5.4',
     'architecture' => 'Modularizada',
     'created' => '" . date('Y-m-d H:i:s') . "',
     'modules' => [
@@ -493,10 +493,10 @@ function updateDatabaseConfig($config) {
     $config_file = __DIR__ . '/config.php';
     $content = file_get_contents($config_file);
     
-    // Atualizar versão para 5.2
+    // Atualizar versão para 0.5.4
     $content = preg_replace(
         "/define\('SISTEMA_VERSAO', '[^']+'\);/",
-        "define('SISTEMA_VERSAO', '5.2');",
+        "define('SISTEMA_VERSAO', '0.5.4');",
         $content
     );
     
@@ -533,10 +533,10 @@ function createFullConfigFile($config) {
     // Construir conteúdo linha por linha para evitar problemas com aspas
     $lines = [];
     $lines[] = '<?php';
-    $lines[] = '// config.php - Configurações do Sistema (Gerado automaticamente v5.2)';
+    $lines[] = '// config.php - Configurações do Sistema (Gerado automaticamente v0.5.4)';
     $lines[] = '';
     $lines[] = '// Versão do sistema';
-    $lines[] = "define('SISTEMA_VERSAO', '5.2');";
+    $lines[] = "define('SISTEMA_VERSAO', '0.5.4');";
     $lines[] = "define('SISTEMA_NOME', 'Sistema de Controle de Produção');";
     $lines[] = '';
     $lines[] = '// Configurações do banco de dados';
@@ -576,7 +576,7 @@ function showSuccessPage() {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Instalação Concluída - Sistema de Controle de Produção v5.2</title>
+        <title>Instalação Concluída - Sistema de Controle de Produção v0.5.4</title>
         <style>
             body { font-family: Arial, sans-serif; background: #f5f5f5; margin: 0; padding: 20px; }
             .container { max-width: 700px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
@@ -600,11 +600,11 @@ function showSuccessPage() {
             <div class="success">
                 <div class="icon">✅</div>
                 <h1>Instalação Concluída!</h1>
-                <p>O Sistema de Controle de Produção v5.2 foi instalado com sucesso.</p>
+                <p>O Sistema de Controle de Produção v0.5.4 foi instalado com sucesso.</p>
             </div>
             
             <div class="new-features">
-                <strong>🚀 Novidades da v5.2:</strong><br>
+                <strong>🚀 Novidades da v0.5.4:</strong><br>
                 • <strong>API Modularizada:</strong> Código organizado em módulos especializados<br>
                 • <strong>Melhor Segurança:</strong> Proteção avançada contra acesso direto<br>
                 • <strong>Fácil Manutenção:</strong> Arquivos menores e mais específicos<br>
@@ -614,7 +614,7 @@ function showSuccessPage() {
             <div class="info">
                 <strong>📊 Informações da Instalação:</strong><br>
                 • Data/Hora: <?= date('d/m/Y H:i:s') ?><br>
-                • Versão: 5.2 (API Modularizada)<br>
+                • Versão: 0.5.4 (API Modularizada)<br>
                 • Banco: <?= $db_name ?><br>
                 • Dados de exemplo: <?= $sample_data ?><br>
                 • Estrutura da API: 5 módulos criados<br>
@@ -655,7 +655,7 @@ function showSuccessPage() {
             </div>
             
             <div style="text-align: center; margin-top: 30px; color: #666; font-size: 0.9em;">
-                Sistema de Controle de Produção v5.2<br>
+                Sistema de Controle de Produção v0.5.4<br>
                 API Modularizada - Desenvolvido para máxima eficiência
             </div>
         </div>
@@ -675,7 +675,7 @@ function showErrorPage($error_message) {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Erro na Instalação - Sistema de Controle de Produção v5.2</title>
+        <title>Erro na Instalação - Sistema de Controle de Produção v0.5.4</title>
         <style>
             body { font-family: Arial, sans-serif; background: #f5f5f5; margin: 0; padding: 20px; }
             .container { max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
@@ -696,7 +696,7 @@ function showErrorPage($error_message) {
             <div class="error">
                 <div class="icon">❌</div>
                 <h1>Erro na Instalação</h1>
-                <p>Ocorreu um problema durante a instalação do sistema v5.2.</p>
+                <p>Ocorreu um problema durante a instalação do sistema v0.5.4.</p>
             </div>
             
             <div class="error-details">
@@ -734,7 +734,7 @@ function showErrorPage($error_message) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Instalação - Sistema de Controle de Produção v5.2</title>
+    <title>Instalação - Sistema de Controle de Produção v0.5.4</title>
     <style>
         body { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
@@ -880,11 +880,11 @@ function showErrorPage($error_message) {
         <div class="header">
             <h1>🏭 Sistema de Controle de Produção</h1>
             <p>Assistente de Instalação</p>
-            <div class="version-badge">Versão 5.2 - API Modularizada</div>
+            <div class="version-badge">Versão 0.5.4 - API Modularizada</div>
         </div>
         
         <div class="new-features">
-            <strong>🚀 Novidades da v5.2:</strong><br>
+            <strong>🚀 Novidades da v0.5.4:</strong><br>
             • <strong>API Modularizada:</strong> Código organizado em 5 módulos especializados<br>
             • <strong>Proteção Avançada:</strong> Acesso direto aos módulos bloqueado por .htaccess<br>
             • <strong>Arquitetura Escalável:</strong> Estrutura preparada para crescimento<br>
@@ -982,14 +982,14 @@ function showErrorPage($error_message) {
             </div>
             
             <button type="submit" class="btn-install">
-                🚀 Instalar Sistema v5.2
+                🚀 Instalar Sistema v0.5.4
             </button>
         </form>
         
         <?php endif; ?>
         
         <div style="text-align: center; margin-top: 30px; color: #666; font-size: 0.9em;">
-            Sistema de Controle de Produção v5.2<br>
+            Sistema de Controle de Produção v0.5.4<br>
             API Modularizada - Máxima eficiência e segurança
         </div>
     </div>
